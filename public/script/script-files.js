@@ -3,11 +3,36 @@ document.getElementById('menuToggle').addEventListener('click', function() {
     document.getElementById('navLinks').classList.toggle('active');
 });
 
-const API_KEY = env.API_KEY;
-const CLIENT_ID = env.CLIENT_ID;
-const FOLDER_ID = env.FOLDER_ID;
+let API_KEY, CLIENT_ID, FOLDER_ID;
 
-// Load the Google API client
+async function fetchEnvVariables() {
+    try {
+        const response = await fetch('/env');
+        if (!response.ok) {
+            throw new Error('Failed to fetch environment variables');
+        }
+        const env = await response.json();
+        return env;
+    } catch (error) {
+        console.error('Error fetching environment variables:', error);
+        throw error;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const env = await fetchEnvVariables();
+        API_KEY = env.API_KEY;
+        CLIENT_ID = env.CLIENT_ID;
+        FOLDER_ID = env.FOLDER_ID;
+
+        // Initialize the Google API client
+        loadGapiClient();
+    } catch (error) {
+        console.error('Failed to initialize application:', error);
+    }
+});
+
 function loadGapiClient() {
     gapi.load('client', async () => {
         try {
@@ -22,7 +47,6 @@ function loadGapiClient() {
     });
 }
 
-// List files in the specified folder
 async function listFiles() {
     try {
         const response = await gapi.client.drive.files.list({
@@ -160,6 +184,3 @@ function showError(error) {
     `;
     document.getElementById('fileCount').textContent = 'Error';
 }
-
-// Initialize the page
-document.addEventListener('DOMContentLoaded', loadGapiClient);

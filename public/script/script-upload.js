@@ -1,9 +1,7 @@
-
 // Google Drive API configuration
-
-const API_KEY = env.API_KEY;
-const CLIENT_ID = env.CLIENT_ID;
-const FOLDER_ID = env.FOLDER_ID;
+let API_KEY;
+let CLIENT_ID;
+let FOLDER_ID;
 
 // API discovery docs and scopes
 const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
@@ -107,7 +105,7 @@ fileInput.addEventListener('change', (e) => {
 function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
-}
+};
 
 ['dragenter', 'dragover'].forEach(eventName => {
     dropArea.addEventListener(eventName, highlight, false);
@@ -144,7 +142,7 @@ function handleFiles(files) {
 // Update the file list display
 function updateFileList() {
     fileList.innerHTML = '';
-    
+
     if (filesToUpload.length === 0) {
         return;
     }
@@ -209,7 +207,6 @@ uploadBtn.addEventListener('click', async () => {
     clearMessages();
     uploadBtn.disabled = true;
     uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-    
     let successCount = 0;
     let errorFiles = [];
     
@@ -273,7 +270,7 @@ function showError(message) {
     errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
     errorMessage.style.display = 'block';
     successMessage.style.display = 'none';
-}
+};
 
 // Clear all messages
 function clearMessages() {
@@ -286,14 +283,31 @@ menuToggle.addEventListener('click', function() {
     navLinks.classList.toggle('active');
 });
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
-    // Load the Google API client
-    gapi.load('client', initializeGapiClient);
+async function fetchEnvVariables() {
+    try {
+        const response = await fetch('/env');
+        if (!response.ok) {
+            throw new Error('Failed to fetch environment variables');
+        }
+        const env = await response.json();
+        return env;
+    } catch (error) {
+        console.error('Error fetching environment variables:', error);
+        throw error;
+    }
+}
 
-    // Initialize Google Identity Services
-    gisInit();
-    
-    // Set up event listeners
-    authBtn.addEventListener('click', handleAuthClick);
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const env = await fetchEnvVariables();
+        API_KEY = env.API_KEY;
+        CLIENT_ID = env.CLIENT_ID;
+        FOLDER_ID = env.FOLDER_ID;
+
+        // Initialize the Google API client
+        gapi.load('client', initializeGapiClient);
+        gisInit();
+    } catch (error) {
+        console.error('Failed to initialize application:', error);
+    }
 });
