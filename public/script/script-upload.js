@@ -29,41 +29,49 @@ const signOutBtn = document.getElementById('signOutBtn'); // Update to get the b
 let filesToUpload = [];
 
 // Initialize the API client
-function initializeGapiClient() {
-    gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: DISCOVERY_DOCS,
-    }).then(() => {
+async function initializeGapiClient() {
+    try {
+        await gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: DISCOVERY_DOCS,
+        });
         gapiInited = true;
         maybeEnableButtons();
-    });
+    } catch (error) {
+        console.error('Error initializing GAPI client:', error);
+        showError('Failed to initialize Google API client.');
+    }
 }
 
 // Initialize Google Identity Services
 function gisInit() {
-    console.log('Initializing Google Identity Services...');
-    tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: (response) => {
-            console.log('Authentication response received:', response);
-            if (response.error) {
-                console.error('Error during authentication:', response.error);
-                showError('Authentication failed. Please try again.');
-                return;
-            }
-            console.log('Authentication successful.');
-            const token = response.access_token;
-            sessionStorage.setItem('access_token', token); // Save token in sessionStorage
-            localStorage.setItem('access_token', token); // Save token in localStorage for persistence
-            authBtn.style.display = 'none';
-            signOutBtn.style.display = 'block'; // Show sign-out button
-            uploadBtn.disabled = filesToUpload.length === 0;
-            checkFolderAccess();
-        },
-    });
-    gisInited = true;
-    maybeEnableButtons();
+    try {
+        console.log('Initializing Google Identity Services...');
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            callback: (response) => {
+                if (response.error) {
+                    console.error('Error during authentication:', response.error);
+                    showError('Authentication failed. Please try again.');
+                    return;
+                }
+                console.log('Authentication successful.');
+                const token = response.access_token;
+                sessionStorage.setItem('access_token', token);
+                localStorage.setItem('access_token', token);
+                authBtn.style.display = 'none';
+                signOutBtn.style.display = 'block';
+                uploadBtn.disabled = filesToUpload.length === 0;
+                checkFolderAccess();
+            },
+        });
+        gisInited = true;
+        maybeEnableButtons();
+    } catch (error) {
+        console.error('Error initializing Google Identity Services:', error);
+        showError('Failed to initialize authentication services.');
+    }
 }
 
 // Check if both GAPI and GIS are initialized
@@ -104,20 +112,20 @@ function handleSignOutClick() {
 }
 
 // Check if we have access to the target folder
-function checkFolderAccess() {
-    if (!gapi.client || !gapi.client.drive) {
-        console.error('Google API client is not initialized.');
-        return;
-    }
-    gapi.client.drive.files.get({
-        fileId: FOLDER_ID,
-        fields: 'name'
-    }).then(function(response) {
+async function checkFolderAccess() {
+    try {
+        if (!gapi.client || !gapi.client.drive) {
+            throw new Error('Google API client is not initialized.');
+        }
+        const response = await gapi.client.drive.files.get({
+            fileId: FOLDER_ID,
+            fields: 'name',
+        });
         console.log('Folder accessible:', response.result.name);
-    }).catch(function(error) {
-        showError('Select the file you want to upload.');
+    } catch (error) {
         console.error('Error accessing folder:', error);
-    });
+        showError('Select the file you want to upload.');
+    }
 }
 
 // Handle file selection via button
@@ -233,62 +241,65 @@ function formatFileSize(bytes) {
 // Handle file upload to Google Drive
 uploadBtn.addEventListener('click', async () => {
     if (filesToUpload.length === 0) {
-        showError('Please select at least one file to upload');
+        showError('Please select at least one file to upload.');
         return;
     }
-    
+
     clearMessages();
     uploadBtn.disabled = true;
     uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
     let successCount = 0;
-    let errorFiles = [];
-    
-    for (let i = 0; i < filesToUpload.length; i++) {
-        const file = filesToUpload[i];
+    const errorFiles = [];
+
+    for (const file of filesToUpload) {
         try {
             await uploadFileToDrive(file);
             successCount++;
-        } catch (error) {
-            console.error('Error uploading file:', error);
+        } catch {
             errorFiles.push(file.name);
         }
     }
-    
+
     // Show upload results
     if (errorFiles.length === 0) {
-        showSuccess(`Successfully uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'} to Google Drive!`);
+        showSuccess(`Successfully uploaded ${successCount} file(s) to Google Drive!`);
         filesToUpload = [];
         fileList.innerHTML = '';
     } else {
-        showError(`Uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'}. Failed to upload: ${errorFiles.join(', ')}`);
+        showError(`Uploaded ${successCount} file(s). Failed to upload: ${errorFiles.join(', ')}`);
     }
-    
+
     uploadBtn.disabled = false;
     uploadBtn.innerHTML = 'Upload to Google Drive';
 });
 
 // Upload a single file to Google Drive
-function uploadFileToDrive(file) {
+async function uploadFileToDrive(file) {
     const metadata = {
         name: file.name,
         mimeType: file.type,
-        parents: [FOLDER_ID]
+        parents: [FOLDER_ID],
     };
-    
+
     const form = new FormData();
     form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     form.append('file', file);
-    
-    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-        method: 'POST',
-        headers: new Headers({ 'Authorization': 'Bearer ' + gapi.client.getToken().access_token }),
-        body: form
-    }).then(response => {
+
+    try {
+        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+            method: 'POST',
+            headers: new Headers({ 'Authorization': 'Bearer ' + gapi.client.getToken().access_token }),
+            body: form,
+        });
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Upload failed with status: ${response.status}`);
         }
-        return response.json();
-    });
+        return await response.json();
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        throw error;
+    }
 }
 
 // Show success message
