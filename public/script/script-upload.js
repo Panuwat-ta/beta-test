@@ -11,27 +11,19 @@ let tokenClient;
 let gapiInited = false;
 let gisInited = false;
 
-// Cache DOM elements to avoid repeated lookups
-const elements = {
-    authBtn: document.getElementById('authBtn'),
-    uploadBtn: document.getElementById('uploadBtn'),
-    dropArea: document.getElementById('dropArea'),
-    fileInput: document.getElementById('fileInput'),
-    selectFilesBtn: document.getElementById('selectFiles'),
-    fileList: document.getElementById('fileList'),
-    successMessage: document.getElementById('successMessage'),
-    errorMessage: document.getElementById('errorMessage'),
-    menuToggle: document.getElementById('menuToggle'),
-    navLinks: document.getElementById('navLinks'),
-    uploadContainer: document.querySelector('.upload-container'),
-};
+// Elements
+const authBtn = document.getElementById('authBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const dropArea = document.getElementById('dropArea');
+const fileInput = document.getElementById('fileInput');
+const selectFilesBtn = document.getElementById('selectFiles');
+const fileList = document.getElementById('fileList');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
 
-// Create sign-out button once and append it
-const signOutBtn = document.createElement('button');
-signOutBtn.className = 'google-btn';
-signOutBtn.style.display = 'none';
-signOutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sign Out';
-elements.uploadContainer.appendChild(signOutBtn);
+const signOutBtn = document.getElementById('signOutBtn'); // Update to get the button from HTML
 
 // Files to upload
 let filesToUpload = [];
@@ -64,9 +56,9 @@ function gisInit() {
             const token = response.access_token;
             sessionStorage.setItem('access_token', token); // Save token in sessionStorage
             localStorage.setItem('access_token', token); // Save token in localStorage for persistence
-            elements.authBtn.style.display = 'none';
+            authBtn.style.display = 'none';
             signOutBtn.style.display = 'block'; // Show sign-out button
-            elements.uploadBtn.disabled = filesToUpload.length === 0;
+            uploadBtn.disabled = filesToUpload.length === 0;
             checkFolderAccess();
         },
     });
@@ -77,8 +69,8 @@ function gisInit() {
 // Check if both GAPI and GIS are initialized
 function maybeEnableButtons() {
     if (gapiInited && gisInited) {
-        elements.authBtn.style.display = 'block'; // Ensure the button is visible
-        elements.authBtn.disabled = false;
+        authBtn.style.display = 'block'; // Ensure the button is visible
+        authBtn.disabled = false;
     }
 }
 
@@ -105,9 +97,9 @@ function handleSignOutClick() {
     sessionStorage.removeItem('access_token'); // Clear token from sessionStorage
     localStorage.removeItem('access_token'); // Clear token from localStorage
     gapi.client.setToken(null); // Clear token from Google API client
-    elements.authBtn.style.display = 'block';
+    authBtn.style.display = 'block';
     signOutBtn.style.display = 'none';
-    elements.uploadBtn.disabled = true;
+    uploadBtn.disabled = true;
     showSuccess('You have signed out successfully.');
 }
 
@@ -129,18 +121,18 @@ function checkFolderAccess() {
 }
 
 // Handle file selection via button
-elements.selectFilesBtn.addEventListener('click', () => {
-    elements.fileInput.click();
+selectFilesBtn.addEventListener('click', () => {
+    fileInput.click();
 });
 
 // Handle file selection change
-elements.fileInput.addEventListener('change', (e) => {
+fileInput.addEventListener('change', (e) => {
     handleFiles(e.target.files);
 });
 
-// Optimize event listeners for drag and drop
+// Handle drag and drop events
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    elements.dropArea.addEventListener(eventName, preventDefaults, false);
+    dropArea.addEventListener(eventName, preventDefaults, false);
 });
 
 function preventDefaults(e) {
@@ -149,15 +141,23 @@ function preventDefaults(e) {
 };
 
 ['dragenter', 'dragover'].forEach(eventName => {
-    elements.dropArea.addEventListener(eventName, () => elements.dropArea.classList.add('dragover'), false);
+    dropArea.addEventListener(eventName, highlight, false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    elements.dropArea.addEventListener(eventName, () => elements.dropArea.classList.remove('dragover'), false);
+    dropArea.addEventListener(eventName, unhighlight, false);
 });
 
+function highlight() {
+    dropArea.classList.add('dragover');
+}
+
+function unhighlight() {
+    dropArea.classList.remove('dragover');
+}
+
 // Handle dropped files
-elements.dropArea.addEventListener('drop', (e) => {
+dropArea.addEventListener('drop', (e) => {
     const dt = e.dataTransfer;
     const files = dt.files;
     handleFiles(files);
@@ -168,51 +168,57 @@ function handleFiles(files) {
     filesToUpload = Array.from(files);
     updateFileList();
     if (gapi.client.getToken() !== null) {
-        elements.uploadBtn.disabled = filesToUpload.length === 0;
+        uploadBtn.disabled = filesToUpload.length === 0;
     }
 }
 
-// Optimize file list rendering
+// Update the file list display
 function updateFileList() {
-    const fragment = document.createDocumentFragment();
-    elements.fileList.innerHTML = '';
+    fileList.innerHTML = '';
 
+    if (filesToUpload.length === 0) {
+        return;
+    }
+    
     filesToUpload.forEach((file, index) => {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
-
-        fileItem.innerHTML = `
-            <div class="file-info">
-                <i class="fas fa-file file-icon"></i>
-                <div>
-                    <div class="file-name">${file.name}</div>
-                    <div class="file-size">${formatFileSize(file.size)}</div>
-                </div>
+        
+        const fileInfo = document.createElement('div');
+        fileInfo.className = 'file-info';
+        fileInfo.innerHTML = `
+            <i class="fas fa-file file-icon"></i>
+            <div>
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${formatFileSize(file.size)}</div>
             </div>
-            <button class="remove-btn"><i class="fas fa-times"></i></button>
         `;
-
-        const removeBtn = fileItem.querySelector('.remove-btn');
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
         removeBtn.onclick = () => removeFile(index);
-
+        
+        fileItem.appendChild(fileInfo);
+        fileItem.appendChild(removeBtn);
+        fileList.appendChild(fileItem);
+        
         if (file.size > 750 * 1024 * 1024) {
             const warning = document.createElement('div');
-            warning.className = 'file-warning';
+            warning.style.color = '#ff9800';
+            warning.style.fontSize = '0.8rem';
+            warning.style.marginTop = '5px';
             warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> File exceeds 750MB limit and may not upload';
             fileItem.appendChild(warning);
         }
-
-        fragment.appendChild(fileItem);
     });
-
-    elements.fileList.appendChild(fragment);
 }
 
 // Remove a file from the list
 function removeFile(index) {
     filesToUpload.splice(index, 1);
     updateFileList();
-    elements.uploadBtn.disabled = filesToUpload.length === 0;
+    uploadBtn.disabled = filesToUpload.length === 0;
 }
 
 // Format file size for display
@@ -224,33 +230,41 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Optimize file upload loop
-elements.uploadBtn.addEventListener('click', async () => {
+// Handle file upload to Google Drive
+uploadBtn.addEventListener('click', async () => {
     if (filesToUpload.length === 0) {
         showError('Please select at least one file to upload');
         return;
     }
-
+    
     clearMessages();
-    elements.uploadBtn.disabled = true;
-    elements.uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-
-    const results = await Promise.allSettled(filesToUpload.map(uploadFileToDrive));
-    const successCount = results.filter(result => result.status === 'fulfilled').length;
-    const errorFiles = results
-        .filter(result => result.status === 'rejected')
-        .map((_, index) => filesToUpload[index].name);
-
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    let successCount = 0;
+    let errorFiles = [];
+    
+    for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
+        try {
+            await uploadFileToDrive(file);
+            successCount++;
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            errorFiles.push(file.name);
+        }
+    }
+    
+    // Show upload results
     if (errorFiles.length === 0) {
         showSuccess(`Successfully uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'} to Google Drive!`);
         filesToUpload = [];
-        elements.fileList.innerHTML = '';
+        fileList.innerHTML = '';
     } else {
         showError(`Uploaded ${successCount} ${successCount === 1 ? 'file' : 'files'}. Failed to upload: ${errorFiles.join(', ')}`);
     }
-
-    elements.uploadBtn.disabled = false;
-    elements.uploadBtn.innerHTML = 'Upload to Google Drive';
+    
+    uploadBtn.disabled = false;
+    uploadBtn.innerHTML = 'Upload to Google Drive';
 });
 
 // Upload a single file to Google Drive
@@ -279,35 +293,37 @@ function uploadFileToDrive(file) {
 
 // Show success message
 function showSuccess(message) {
-    elements.successMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    elements.successMessage.style.display = 'block';
-    elements.errorMessage.style.display = 'none';
+    successMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    successMessage.style.display = 'block';
+    errorMessage.style.display = 'none';
 }
 
 // Show error message
 function showError(message) {
-    elements.errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-    elements.errorMessage.style.display = 'block';
-    elements.successMessage.style.display = 'none';
+    errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    errorMessage.style.display = 'block';
+    successMessage.style.display = 'none';
 };
 
 // Clear all messages
 function clearMessages() {
-    elements.successMessage.style.display = 'none';
-    elements.errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+    errorMessage.style.display = 'none';
 }
 
 // Toggle mobile menu
-elements.menuToggle.addEventListener('click', function() {
-    elements.navLinks.classList.toggle('active');
+menuToggle.addEventListener('click', function() {
+    navLinks.classList.toggle('active');
 });
 
-// Optimize environment variable fetching
 async function fetchEnvVariables() {
     try {
         const response = await fetch('/env');
-        if (!response.ok) throw new Error('Failed to fetch environment variables');
-        return await response.json();
+        if (!response.ok) {
+            throw new Error('Failed to fetch environment variables');
+        }
+        const env = await response.json();
+        return env;
     } catch (error) {
         console.error('Error fetching environment variables:', error);
         throw error;
@@ -331,25 +347,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize the Google API client
         console.log('Loading Google API client...');
         gapi.load('client', async () => {
-            await initializeGapiClient();
+            await initializeGapiClient(); // Ensure gapi.client is initialized
             gisInit();
 
+            // Restore token from localStorage
             const savedToken = localStorage.getItem('access_token');
             if (savedToken) {
                 console.log('Restoring access token from localStorage...');
                 gapi.client.setToken({ access_token: savedToken });
 
+                // Wait for gapi.client to fully initialize before proceeding
                 gapi.client.load('drive', 'v3', () => {
                     console.log('Google Drive API loaded.');
-                    elements.authBtn.style.display = 'none';
-                    signOutBtn.style.display = 'block';
-                    elements.uploadBtn.disabled = filesToUpload.length === 0;
+                    authBtn.style.display = 'none';
+                    signOutBtn.style.display = 'block'; // Show sign-out button
+                    uploadBtn.disabled = filesToUpload.length === 0;
+
+                    // Call checkFolderAccess only after gapi.client is initialized
                     checkFolderAccess();
                 });
             } else {
                 console.log('No saved token found. User needs to sign in.');
             }
         });
+        signOutBtn.addEventListener('click', handleSignOutClick); // Bind sign-out button to click event
     } catch (error) {
         console.error('Failed to initialize application:', error);
         showError('Please login before use.');
@@ -357,7 +378,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Ensure the auth button is bound to the click event
-elements.authBtn.addEventListener('click', handleAuthClick);
-
-// Bind sign-out button to click event
-signOutBtn.addEventListener('click', handleSignOutClick);
+authBtn.addEventListener('click', handleAuthClick);
