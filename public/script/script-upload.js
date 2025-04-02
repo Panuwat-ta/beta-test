@@ -359,8 +359,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             signOutBtn.style.display = 'block'; // Show sign-out button
             uploadBtn.disabled = filesToUpload.length === 0;
             checkFolderAccess();
+        } else if (savedToken && tokenExpiration && Date.now() >= tokenExpiration) {
+            console.log('Access token expired. Attempting to refresh...');
+            tokenClient.requestAccessToken({ prompt: '' }); // Attempt silent refresh
         } else {
-            console.log('Access token expired or not found.');
+            console.log('No valid access token found.');
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('token_expiration');
         }
