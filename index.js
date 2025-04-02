@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs'); // Replace bcrypt with bcryptjs
+const compression = require('compression'); // Add compression middleware
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -36,6 +37,17 @@ connectToMongoDB();
 
 // Middleware for parsing JSON
 app.use(express.json());
+
+// Enable compression for all responses
+app.use(compression());
+
+// Set global cache headers for static files
+app.use((req, res, next) => {
+  if (req.method === 'GET' && req.path.startsWith('/public')) {
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+  }
+  next();
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -88,11 +100,11 @@ app.get('/suport.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'suport.html'));
 });
 
-// Route สำหรับส่งข้อมูล MongoDB
+// Optimize MongoDB query for fetching data
 app.get('/data', async (req, res) => {
   try {
     const collection = client.db("Link").collection("link");
-    const data = await collection.find().toArray();
+    const data = await collection.find({}, { projection: { _id: 0 } }).toArray(); // Exclude _id for smaller payload
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -291,23 +303,20 @@ app.post('/IP', async (req, res) => {
   }
 });
 
-// Middleware to log and store user IP
+// Optimize IP logging middleware
 app.use(async (req, res, next) => {
   const userIP = getUserIP(req); // ใช้ helper function เพื่อดึง IP
   if (userIP) {
     try {
       const collection = client.db("Link").collection("IP");
-      const result = await collection.updateOne(
+      await collection.updateOne(
         { IP: userIP },
         { $set: { timestamp: getThailandTimestamp() } }, // อัปเดต timestamp เป็นเวลาประเทศไทย
         { upsert: true }
       );
-      console.log(`Logged IP to database: ${JSON.stringify(result)}`); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์การบันทึก
     } catch (error) {
       console.error("Error logging IP:", error.message); 
     }
-  } else {
-    console.error('Unable to retrieve IP for logging');
   }
   next();
 });
