@@ -109,6 +109,10 @@ function handleSignOutClick() {
 
 // Check if we have access to the target folder
 function checkFolderAccess() {
+    if (!gapi.client || !gapi.client.drive) {
+        console.error('Google API client is not initialized.');
+        return;
+    }
     gapi.client.drive.files.get({
         fileId: FOLDER_ID,
         fields: 'name'
@@ -346,19 +350,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Initialize the Google API client
         console.log('Loading Google API client...');
-        gapi.load('client', initializeGapiClient);
-        gisInit();
+        gapi.load('client', async () => {
+            await initializeGapiClient(); // Ensure gapi.client is initialized
+            gisInit();
 
-        // Restore token from localStorage
-        const savedToken = localStorage.getItem('access_token');
-        if (savedToken) {
-            console.log('Restoring access token from localStorage...');
-            gapi.client.setToken({ access_token: savedToken });
-            authBtn.style.display = 'none';
-            signOutBtn.style.display = 'block'; // Show sign-out button
-            uploadBtn.disabled = filesToUpload.length === 0;
-            checkFolderAccess();
-        }
+            // Restore token from localStorage
+            const savedToken = localStorage.getItem('access_token');
+            if (savedToken) {
+                console.log('Restoring access token from localStorage...');
+                gapi.client.setToken({ access_token: savedToken });
+
+                // Wait for gapi.client to fully initialize before proceeding
+                gapi.client.load('drive', 'v3', () => {
+                    console.log('Google Drive API loaded.');
+                    authBtn.style.display = 'none';
+                    signOutBtn.style.display = 'block'; // Show sign-out button
+                    uploadBtn.disabled = filesToUpload.length === 0;
+
+                    // Call checkFolderAccess only after gapi.client is initialized
+                    checkFolderAccess();
+                });
+            } else {
+                console.log('No saved token found. User needs to sign in.');
+            }
+        });
     } catch (error) {
         console.error('Failed to initialize application:', error);
         showError('Please login before use.');
