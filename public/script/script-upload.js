@@ -39,10 +39,22 @@ function initializeGapiClient() {
 
 // Initialize Google Identity Services
 function gisInit() {
+    console.log('Initializing Google Identity Services...');
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        callback: '', // Will be set later
+        callback: (response) => {
+            console.log('Authentication response received:', response);
+            if (response.error) {
+                console.error('Error during authentication:', response.error);
+                showError('Authentication failed. Please try again.');
+                return;
+            }
+            console.log('Authentication successful.');
+            authBtn.style.display = 'none';
+            uploadBtn.disabled = filesToUpload.length === 0;
+            checkFolderAccess();
+        },
     });
     gisInited = true;
     maybeEnableButtons();
@@ -51,26 +63,25 @@ function gisInit() {
 // Check if both GAPI and GIS are initialized
 function maybeEnableButtons() {
     if (gapiInited && gisInited) {
-        authBtn.style.display = 'block';
+        authBtn.style.display = 'block'; // Ensure the button is visible
         authBtn.disabled = false;
     }
 }
 
 // Handle sign-in
 function handleAuthClick() {
-    tokenClient.callback = async (resp) => {
-        if (resp.error !== undefined) {
-            throw (resp);
+    console.log('Sign-in button clicked.');
+    try {
+        if (gapi.client.getToken() === null) {
+            console.log('Requesting new access token...');
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        } else {
+            console.log('Using existing access token...');
+            tokenClient.requestAccessToken({ prompt: '' });
         }
-        authBtn.style.display = 'none';
-        uploadBtn.disabled = filesToUpload.length === 0;
-        checkFolderAccess();
-    };
-    
-    if (gapi.client.getToken() === null) {
-        tokenClient.requestAccessToken({ prompt: 'consent' });
-    } else {
-        tokenClient.requestAccessToken({ prompt: '' });
+    } catch (error) {
+        console.error('Error during sign-in:', error);
+        showError('Sign-in failed. Please try again.');
     }
 }
 
@@ -299,15 +310,27 @@ async function fetchEnvVariables() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        console.log('Fetching environment variables...');
         const env = await fetchEnvVariables();
         API_KEY = env.API_KEY;
         CLIENT_ID = env.CLIENT_ID;
         FOLDER_ID = env.FOLDER_ID;
 
+        if (!CLIENT_ID || !API_KEY || !FOLDER_ID) {
+            throw new Error('Missing required environment variables');
+        }
+
+        console.log('Environment variables loaded:', { API_KEY, CLIENT_ID, FOLDER_ID });
+
         // Initialize the Google API client
+        console.log('Loading Google API client...');
         gapi.load('client', initializeGapiClient);
         gisInit();
     } catch (error) {
         console.error('Failed to initialize application:', error);
+        showError('Failed to initialize application. Please check your configuration.');
     }
 });
+
+// Ensure the auth button is bound to the click event
+authBtn.addEventListener('click', handleAuthClick);
