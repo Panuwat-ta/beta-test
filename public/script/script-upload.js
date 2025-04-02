@@ -23,6 +23,12 @@ const errorMessage = document.getElementById('errorMessage');
 const menuToggle = document.getElementById('menuToggle');
 const navLinks = document.getElementById('navLinks');
 
+const signOutBtn = document.createElement('button'); // Create sign-out button
+signOutBtn.className = 'google-btn';
+signOutBtn.style.display = 'none';
+signOutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sign Out';
+document.querySelector('.upload-container').appendChild(signOutBtn); // Append to container
+
 // Files to upload
 let filesToUpload = [];
 
@@ -51,7 +57,9 @@ function gisInit() {
                 return;
             }
             console.log('Authentication successful.');
+            sessionStorage.setItem('access_token', response.access_token); // Save token
             authBtn.style.display = 'none';
+            signOutBtn.style.display = 'block'; // Show sign-out button
             uploadBtn.disabled = filesToUpload.length === 0;
             checkFolderAccess();
         },
@@ -83,6 +91,17 @@ function handleAuthClick() {
         console.error('Error during sign-in:', error);
         showError('Sign-in failed. Please try again.');
     }
+}
+
+// Handle sign-out
+function handleSignOutClick() {
+    console.log('Sign-out button clicked.');
+    sessionStorage.removeItem('access_token'); // Clear token from sessionStorage
+    gapi.client.setToken(null); // Clear token from Google API client
+    authBtn.style.display = 'block';
+    signOutBtn.style.display = 'none';
+    uploadBtn.disabled = true;
+    showSuccess('You have signed out successfully.');
 }
 
 // Check if we have access to the target folder
@@ -326,6 +345,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Loading Google API client...');
         gapi.load('client', initializeGapiClient);
         gisInit();
+
+        // Restore token from sessionStorage
+        const savedToken = sessionStorage.getItem('access_token');
+        if (savedToken) {
+            console.log('Restoring access token from sessionStorage...');
+            gapi.client.setToken({ access_token: savedToken });
+            authBtn.style.display = 'none';
+            signOutBtn.style.display = 'block'; // Show sign-out button
+            uploadBtn.disabled = filesToUpload.length === 0;
+            checkFolderAccess();
+        }
     } catch (error) {
         console.error('Failed to initialize application:', error);
         showError('Failed to initialize application. Please check your configuration.');
@@ -334,3 +364,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Ensure the auth button is bound to the click event
 authBtn.addEventListener('click', handleAuthClick);
+
+// Bind sign-out button to click event
+signOutBtn.addEventListener('click', handleSignOutClick);
