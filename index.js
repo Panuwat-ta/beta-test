@@ -220,11 +220,6 @@ app.get('/env', (req, res) => {
   });
 });
 
-
-
-
-
-
 // Helper function to get user IP
 function getUserIP(req) {
   const forwarded = req.headers['x-forwarded-for'];
@@ -247,6 +242,32 @@ function getThailandTimestamp() {
   };
   return new Date().toLocaleString("en-GB", options); // ใช้ en-GB เพื่อให้ได้รูปแบบวัน/เดือน/ปี
 }
+
+// Helper function to get today's date in Thailand timezone
+function getTodayDateThailand() {
+  const options = { 
+    timeZone: "Asia/Bangkok", 
+    year: "numeric", 
+    month: "2-digit", 
+    day: "2-digit" 
+  };
+  return new Date().toLocaleDateString("en-GB", options); // ใช้ en-GB เพื่อให้ได้รูปแบบวัน/เดือน/ปี
+}
+
+// Route สำหรับแสดงจำนวนผู้เข้าใช้งานวันนี้
+app.get('/daily-visitors', async (req, res) => {
+  try {
+    const today = getTodayDateThailand(); // วันที่ปัจจุบันในเขตเวลาไทย
+    const collection = client.db("Link").collection("IP");
+    const visitors = await collection.countDocuments({
+      timestamp: { $regex: `^${today}` } // ค้นหา timestamp ที่ขึ้นต้นด้วยวันที่ปัจจุบัน
+    });
+    res.json({ date: today, visitors });
+  } catch (error) {
+    console.error("Error fetching daily visitors:", error.message);
+    res.status(500).send("Error fetching daily visitors");
+  }
+});
 
 // Route สำหรับบันทึก IP
 app.post('/IP', async (req, res) => {
@@ -295,12 +316,6 @@ app.use(async (req, res, next) => {
 app.use((req, res) => {
   res.status(404).send('Route not found');
 });
-
-
-
-
-
-
 
 // Export app for Vercel compatibility
 module.exports = app;
