@@ -211,8 +211,6 @@ app.delete('/delete-link/:id', async (req, res) => {
   }
 });
 
-
-
 // Serve environment variables to the frontend
 app.get('/env', (req, res) => {
   res.json({
@@ -222,10 +220,87 @@ app.get('/env', (req, res) => {
   });
 });
 
+
+
+
+
+
+// Helper function to get user IP
+function getUserIP(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = forwarded ? forwarded.split(',')[0].trim() : req.ip;
+  console.log(`Extracted IP: ${ip || 'No IP found'}`); // เพิ่ม log เพื่อตรวจสอบ IP ที่ดึงมา
+  return ip;
+}
+
+// Helper function to get current timestamp in Thailand timezone with 24-hour format
+function getThailandTimestamp() {
+  const options = { 
+    timeZone: "Asia/Bangkok", 
+    year: "numeric", 
+    month: "2-digit", 
+    day: "2-digit", 
+    hour: "2-digit", 
+    minute: "2-digit", 
+    second: "2-digit", 
+    hour12: false 
+  };
+  return new Date().toLocaleString("en-GB", options); // ใช้ en-GB เพื่อให้ได้รูปแบบวัน/เดือน/ปี
+}
+
+// Route สำหรับบันทึก IP
+app.post('/IP', async (req, res) => {
+  const userIP = getUserIP(req); // ใช้ helper function เพื่อดึง IP
+  if (!userIP) {
+    console.error('Unable to retrieve IP');
+    return res.status(400).send('Unable to retrieve IP');
+  }
+  try {
+    const collection = client.db("Link").collection("IP");
+    const result = await collection.updateOne(
+      { IP: userIP }, // ค้นหา IP ที่ซ้ำ
+      { $set: { timestamp: getThailandTimestamp() } }, // อัปเดต timestamp เป็นเวลาประเทศไทย
+      { upsert: true } // หากไม่มี IP ให้เพิ่มใหม่
+    );
+    console.log(`IP processed: ${JSON.stringify(result)}`); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์
+    res.status(200).send('IP processed successfully');
+  } catch (error) {
+    console.error("Error processing IP:", error.message); // เพิ่ม log ข้อความ error
+    res.status(500).send("Error processing IP");
+  }
+});
+
+// Middleware to log and store user IP
+app.use(async (req, res, next) => {
+  const userIP = getUserIP(req); // ใช้ helper function เพื่อดึง IP
+  if (userIP) {
+    try {
+      const collection = client.db("Link").collection("IP");
+      const result = await collection.updateOne(
+        { IP: userIP }, // ค้นหา IP ที่ซ้ำ
+        { $set: { timestamp: getThailandTimestamp() } }, // อัปเดต timestamp เป็นเวลาประเทศไทย
+        { upsert: true } // หากไม่มี IP ให้เพิ่มใหม่
+      );
+      console.log(`Logged IP to database: ${JSON.stringify(result)}`); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์การบันทึก
+    } catch (error) {
+      console.error("Error logging IP:", error.message); // เพิ่ม log ข้อความ error
+    }
+  } else {
+    console.error('Unable to retrieve IP for logging'); // เพิ่ม log กรณีไม่สามารถดึง IP ได้
+  }
+  next();
+});
+
 // Handle unhandled routes
 app.use((req, res) => {
   res.status(404).send('Route not found');
 });
+
+
+
+
+
+
 
 // Export app for Vercel compatibility
 module.exports = app;
@@ -234,5 +309,6 @@ module.exports = app;
 if (require.main === module) {
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Test IP logging by sending requests to http://localhost:${port}/IP`);
   });
 }
