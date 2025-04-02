@@ -57,7 +57,9 @@ function gisInit() {
                 return;
             }
             console.log('Authentication successful.');
-            sessionStorage.setItem('access_token', response.access_token); // Save token
+            const token = response.access_token;
+            sessionStorage.setItem('access_token', token); // Save token in sessionStorage
+            localStorage.setItem('access_token', token); // Save token in localStorage for persistence
             authBtn.style.display = 'none';
             signOutBtn.style.display = 'block'; // Show sign-out button
             uploadBtn.disabled = filesToUpload.length === 0;
@@ -97,6 +99,7 @@ function handleAuthClick() {
 function handleSignOutClick() {
     console.log('Sign-out button clicked.');
     sessionStorage.removeItem('access_token'); // Clear token from sessionStorage
+    localStorage.removeItem('access_token'); // Clear token from localStorage
     gapi.client.setToken(null); // Clear token from Google API client
     authBtn.style.display = 'block';
     signOutBtn.style.display = 'none';
@@ -346,10 +349,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         gapi.load('client', initializeGapiClient);
         gisInit();
 
-        // Restore token from sessionStorage
-        const savedToken = sessionStorage.getItem('access_token');
+        // Restore token from localStorage
+        const savedToken = localStorage.getItem('access_token');
         if (savedToken) {
-            console.log('Restoring access token from sessionStorage...');
+            console.log('Restoring access token from localStorage...');
             gapi.client.setToken({ access_token: savedToken });
             authBtn.style.display = 'none';
             signOutBtn.style.display = 'block'; // Show sign-out button

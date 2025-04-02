@@ -42,49 +42,49 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Route สำหรับหน้า Home
 app.get('/', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store'); // หลีกเลี่ยงการแคชไฟล์ HTML
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
 });
 
 // Route สำหรับไฟล์ date.html
 app.get('/date.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'date.html'));
 });
 
 // Route สำหรับไฟล์ profile.html
 app.get('/about.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'about.html'));
 });
 
 // Route สำหรับไฟล์ index.html
 app.get('/index.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
 });
 
 // Route สำหรับไฟล์ login.html
 app.get('/login.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'login.html'));
 });
 
 // Route สำหรับไฟล์ upload.html
 app.get('/upload.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'upload.html'));
 });
 
 // Route สำหรับไฟล์ files.html
 app.get('/files.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'files.html'));
 });
 
 // Route สำหรับไฟล์ suport.html
 app.get('/suport.html', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
   res.sendFile(path.join(__dirname, 'templates', 'suport.html'));
 });
 
@@ -240,7 +240,7 @@ function getThailandTimestamp() {
     second: "2-digit", 
     hour12: false 
   };
-  return new Date().toLocaleString("en-GB", options); // ใช้ en-GB เพื่อให้ได้รูปแบบวัน/เดือน/ปี
+  return new Date().toLocaleString("en-GB", options);
 }
 
 // Helper function to get today's date in Thailand timezone
@@ -251,16 +251,16 @@ function getTodayDateThailand() {
     month: "2-digit", 
     day: "2-digit" 
   };
-  return new Date().toLocaleDateString("en-GB", options); // ใช้ en-GB เพื่อให้ได้รูปแบบวัน/เดือน/ปี
+  return new Date().toLocaleDateString("en-GB", options);
 }
 
 // Route สำหรับแสดงจำนวนผู้เข้าใช้งานวันนี้
 app.get('/daily-visitors', async (req, res) => {
   try {
-    const today = getTodayDateThailand(); // วันที่ปัจจุบันในเขตเวลาไทย
+    const today = getTodayDateThailand();
     const collection = client.db("Link").collection("IP");
     const visitors = await collection.countDocuments({
-      timestamp: { $regex: `^${today}` } // ค้นหา timestamp ที่ขึ้นต้นด้วยวันที่ปัจจุบัน
+      timestamp: { $regex: `^${today}` }
     });
     res.json({ date: today, visitors });
   } catch (error) {
@@ -279,14 +279,14 @@ app.post('/IP', async (req, res) => {
   try {
     const collection = client.db("Link").collection("IP");
     const result = await collection.updateOne(
-      { IP: userIP }, // ค้นหา IP ที่ซ้ำ
+      { IP: userIP },
       { $set: { timestamp: getThailandTimestamp() } }, // อัปเดต timestamp เป็นเวลาประเทศไทย
-      { upsert: true } // หากไม่มี IP ให้เพิ่มใหม่
+      { upsert: true }
     );
     console.log(`IP processed: ${JSON.stringify(result)}`); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์
     res.status(200).send('IP processed successfully');
   } catch (error) {
-    console.error("Error processing IP:", error.message); // เพิ่ม log ข้อความ error
+    console.error("Error processing IP:", error.message); 
     res.status(500).send("Error processing IP");
   }
 });
@@ -298,16 +298,16 @@ app.use(async (req, res, next) => {
     try {
       const collection = client.db("Link").collection("IP");
       const result = await collection.updateOne(
-        { IP: userIP }, // ค้นหา IP ที่ซ้ำ
+        { IP: userIP },
         { $set: { timestamp: getThailandTimestamp() } }, // อัปเดต timestamp เป็นเวลาประเทศไทย
-        { upsert: true } // หากไม่มี IP ให้เพิ่มใหม่
+        { upsert: true }
       );
       console.log(`Logged IP to database: ${JSON.stringify(result)}`); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์การบันทึก
     } catch (error) {
-      console.error("Error logging IP:", error.message); // เพิ่ม log ข้อความ error
+      console.error("Error logging IP:", error.message); 
     }
   } else {
-    console.error('Unable to retrieve IP for logging'); // เพิ่ม log กรณีไม่สามารถดึง IP ได้
+    console.error('Unable to retrieve IP for logging');
   }
   next();
 });
