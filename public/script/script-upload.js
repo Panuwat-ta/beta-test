@@ -57,9 +57,7 @@ function gisInit() {
                 return;
             }
             console.log('Authentication successful.');
-            const expirationTime = Date.now() + 3600 * 1000; // Set expiration time to 1 hour
             sessionStorage.setItem('access_token', response.access_token); // Save token
-            sessionStorage.setItem('token_expiration', expirationTime); // Save expiration time
             authBtn.style.display = 'none';
             signOutBtn.style.display = 'block'; // Show sign-out button
             uploadBtn.disabled = filesToUpload.length === 0;
@@ -99,7 +97,6 @@ function handleAuthClick() {
 function handleSignOutClick() {
     console.log('Sign-out button clicked.');
     sessionStorage.removeItem('access_token'); // Clear token from sessionStorage
-    sessionStorage.removeItem('token_expiration'); // Clear token expiration from sessionStorage
     gapi.client.setToken(null); // Clear token from Google API client
     authBtn.style.display = 'block';
     signOutBtn.style.display = 'none';
@@ -351,21 +348,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Restore token from sessionStorage
         const savedToken = sessionStorage.getItem('access_token');
-        const tokenExpiration = sessionStorage.getItem('token_expiration');
-        if (savedToken && tokenExpiration && Date.now() < tokenExpiration) {
+        if (savedToken) {
             console.log('Restoring access token from sessionStorage...');
             gapi.client.setToken({ access_token: savedToken });
             authBtn.style.display = 'none';
             signOutBtn.style.display = 'block'; // Show sign-out button
             uploadBtn.disabled = filesToUpload.length === 0;
             checkFolderAccess();
-        } else if (savedToken && tokenExpiration && Date.now() >= tokenExpiration) {
-            console.log('Access token expired. Attempting to refresh...');
-            tokenClient.requestAccessToken({ prompt: '' }); // Attempt silent refresh
-        } else {
-            console.log('No valid access token found.');
-            sessionStorage.removeItem('access_token');
-            sessionStorage.removeItem('token_expiration');
         }
     } catch (error) {
         console.error('Failed to initialize application:', error);

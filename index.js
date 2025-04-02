@@ -42,49 +42,49 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Route สำหรับหน้า Home
 app.get('/', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+  res.setHeader('Cache-Control', 'no-store'); // หลีกเลี่ยงการแคชไฟล์ HTML
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
 });
 
 // Route สำหรับไฟล์ date.html
 app.get('/date.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'date.html'));
 });
 
 // Route สำหรับไฟล์ profile.html
 app.get('/about.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'about.html'));
 });
 
 // Route สำหรับไฟล์ index.html
 app.get('/index.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'index.html'));
 });
 
 // Route สำหรับไฟล์ login.html
 app.get('/login.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'login.html'));
 });
 
 // Route สำหรับไฟล์ upload.html
 app.get('/upload.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'upload.html'));
 });
 
 // Route สำหรับไฟล์ files.html
 app.get('/files.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'files.html'));
 });
 
 // Route สำหรับไฟล์ suport.html
 app.get('/suport.html', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'templates', 'suport.html'));
 });
 
