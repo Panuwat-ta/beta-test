@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error('Failed to initialize application:', error);
-        showError('Failed to initialize application. Please check your configuration.');
+        showError('Please login before use.');
     }
 });
 
