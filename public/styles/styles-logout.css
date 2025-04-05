@@ -1,4 +1,3 @@
-
 :root {
     --primary-color: #4285f4;
     --secondary-color: #34a853;
@@ -149,16 +148,40 @@ nav a i {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.profile-name {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: var(--dark-color);
-}
+
 
 .profile-bio {
     color: var(--text-light);
     margin-bottom: 20px;
     line-height: 1.6;
+}
+
+.profile-info {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.info-label {
+    margin-right: 10px;
+    min-width: 100px;
+    text-align: right;
+}
+
+.profile-name, .profile-email, #visitorCount {
+    text-align: left;
+    margin: 0;
+    color: var(--dark-color);
+}
+
+.visitor-info {
+    margin: 20px 0;
 }
 
 .social-links {
@@ -226,6 +249,128 @@ nav a i {
     text-decoration: underline;
 }
 
+.logout-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.logout-btn:hover {
+    background-color: var(--dark-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+.alert-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.alert-box.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.alert-box p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.alert-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.alert-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.alert-btn.confirm-btn {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.alert-btn.confirm-btn:hover {
+    background-color: var(--dark-color);
+}
+
+.alert-btn.cancel-btn {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.alert-btn.cancel-btn:hover {
+    background-color: var(--dark-color);
+}
+
+/* Alert message styles */
+.alert-message {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.alert-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.alert-message.success {
+    background-color: var(--secondary-color);
+}
+
+.alert-message.error {
+    background-color: var(--accent-color);
+}
+
+.alert-message.info {
+    background-color: var(--primary-color);
+}
+
 footer {
     background-color: var(--dark-color);
     color: white;
@@ -244,7 +389,6 @@ footer {
         flex-direction: column;
         width: 100%;
         justify-content: flex-start; /* ใน mobile ให้กลับมาแสดงแบบปกติ */
-
     }
 
     .nav-links #loginLink,
@@ -278,6 +422,28 @@ footer {
         width: 120px;
         height: 120px;
     }
+    
+    /* Responsive adjustments for profile info */
+    .info-row {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .info-label {
+        min-width: unset;
+        margin-right: 0;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    .profile-name, .profile-email, #visitorCount {
+        text-align: center;
+    }
+    
+    .visitor-info {
+        margin: 15px 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -295,5 +461,22 @@ footer {
     
     .profile-name {
         font-size: 1.5rem;
+    }
+    
+    .alert-box {
+        max-width: 90%;
+    }
+    
+    /* Additional adjustments for smaller screens */
+    .profile-card {
+        padding: 15px;
+    }
+    
+    .info-label {
+        font-size: 1.1rem;
+    }
+    
+    .profile-name, .profile-email, #visitorCount {
+        font-size: 1rem;
     }
 }

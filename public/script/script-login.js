@@ -1,6 +1,10 @@
 // Notification system
 function alertBox(message, type = 'info') {
     const alertElement = document.getElementById('alertBox');
+    if (!alertElement) {
+        console.error('Alert box element not found.');
+        return;
+    }
     alertElement.textContent = message;
     alertElement.className = `alert-box ${type} show`;
     
@@ -8,6 +12,18 @@ function alertBox(message, type = 'info') {
     setTimeout(() => {
         alertElement.classList.remove('show');
     }, 5000);
+}
+
+function updateNavLinks(isLoggedIn) {
+    const loginLink = document.getElementById('loginLink');
+    const logoutLink = document.getElementById('logoutLink');
+    if (isLoggedIn) {
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+    } else {
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+    }
 }
 
 async function login() {
@@ -26,16 +42,25 @@ async function login() {
         if (response.ok) {
             const data = await response.json();
             alertBox('Login successful!', 'success');
-            window.location.href = "upload.html";
+            localStorage.setItem('username', username); // เก็บ username ใน localStorage
+            updateNavLinks(true); // Update navigation links
+            window.location.href = "logout.html"; // Redirect to logout page
         } else {
             const error = await response.json();
+            console.error('Login failed:', error.message);
             alertBox(error.message || 'Login failed. Please check your credentials.', 'error');
         }
     } catch (err) {
         console.error('Error during login:', err);
-        alertBox('Network error. Please try again later.', 'error');
+        alertBox('An error occurred during login.', 'error');
     }
 }
+
+// Call this function on page load to set the initial state of nav links
+document.addEventListener('DOMContentLoaded', () => {
+    const isLoggedIn = false; // Replace with actual login status check
+    updateNavLinks(isLoggedIn);
+});
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,7 +108,7 @@ async function register() {
         }
     } catch (err) {
         console.error('Error during registration:', err);
-        alertBox('Network error. Please try again later.', 'error');
+        alertBox('This username or email already exists.', 'error');
     }
 }
 
@@ -108,3 +133,7 @@ function togglePasswordVisibility(inputId, icon) {
     }
 }
 
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });

@@ -126,16 +126,20 @@
                 hour12: false
             });
             const formattedDateTime = `${currentDate} ${currentTime}`;
-
+            
+            // ดึง username จาก localStorage
+            const username = localStorage.getItem('username');
+        
             try {
                 const response = await fetch('/add-link', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'x-username': username || '' // ส่ง username ใน header
                     },
                     body: JSON.stringify({ url, name, date: formattedDateTime }),
                 });
-
+        
                 if (response.ok) {
                     loadLinks();
                 } else {
@@ -224,3 +228,27 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadLinks();
         });
+
+
+        // ตรวจสอบสถานะการล็อกอินเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('username') ? true : false;
+            updateNavLinks(isLoggedIn);
+            fetchDailyVisitors();
+        });
+
+        // อัพเดทการแสดงผลของลิงก์ Login/Logout
+        function updateNavLinks(isLoggedIn) {
+            const loginLink = document.getElementById('loginLink');
+            const logoutLink = document.getElementById('logoutLink');
+            
+            if (!loginLink || !logoutLink) return;
+            
+            if (isLoggedIn) {
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+            } else {
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+            }
+        }

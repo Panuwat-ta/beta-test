@@ -17,11 +17,11 @@
                 const data = await response.json();
                 const tableBody = document.querySelector('#dataTable tbody');
                 tableBody.innerHTML = '';
-
+        
                 if (data.length === 0) {
                     tableBody.innerHTML = `
                         <tr>
-                            <td colspan="4" class="empty-state">
+                            <td colspan="5" class="empty-state"> <!-- เปลี่ยนจาก 4 เป็น 5 เพราะมีคอลัมน์เพิ่ม -->
                                 <i class="fas fa-exclamation-circle"></i>
                                 <h3>No links found</h3>
                                 <p>Add links from the Update page</p>
@@ -30,13 +30,14 @@
                     `;
                     return;
                 }
-
+        
                 data.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td data-label="Date">${item.date}</td>
                         <td data-label="Link"><a href="${item.url}" target="_blank">${item.url}</a></td>
                         <td data-label="Name">${item.name}</td>
+                        <td data-label="Username">${item.username || 'Anonymous'}</td>
                         <td data-label="Action"><button class="action-btn" onclick="window.open('${item.url}', '_blank')"><i class="fas fa-external-link-alt"></i> Open</button></td>
                     `;
                     tableBody.appendChild(row);
@@ -81,3 +82,27 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchData();
         });
+
+
+        // ตรวจสอบสถานะการล็อกอินเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('username') ? true : false;
+            updateNavLinks(isLoggedIn);
+            fetchDailyVisitors();
+        });
+
+        // อัพเดทการแสดงผลของลิงก์ Login/Logout
+        function updateNavLinks(isLoggedIn) {
+            const loginLink = document.getElementById('loginLink');
+            const logoutLink = document.getElementById('logoutLink');
+            
+            if (!loginLink || !logoutLink) return;
+            
+            if (isLoggedIn) {
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+            } else {
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+            }
+        }

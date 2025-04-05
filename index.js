@@ -88,6 +88,12 @@ app.get('/suport.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'suport.html'));
 });
 
+// Route สำหรับไฟล์ logout.html
+app.get('/logout.html', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'templates', 'logout.html'));
+});
+
 // Route สำหรับส่งข้อมูล MongoDB
 app.get('/data', async (req, res) => {
   try {
@@ -108,8 +114,17 @@ app.post('/add-link', async (req, res) => {
   }
 
   try {
+    // ดึง username จาก header
+    const username = req.headers['x-username'];
+    
     const collection = client.db("Link").collection("link");
-    await collection.insertOne({ url, name, date });
+    await collection.insertOne({ 
+      url, 
+      name, 
+      date,
+      username: username || 'anonymous' // ถ้าไม่มี username ให้ใช้ 'anonymous'
+    });
+    
     res.status(201).send('เพิ่มลิงก์สำเร็จ');
   } catch (error) {
     console.error("Error adding link:", error);
@@ -211,6 +226,76 @@ app.delete('/delete-link/:id', async (req, res) => {
   }
 });
 
+// User registration endpoint
+app.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).send('กรุณากรอกข้อมูลให้ครบถ้วน');
+  }
+
+  try {
+    const usersCollection = client.db("Link").collection("User");
+    const existingUser = await usersCollection.findOne({ username });
+
+    if (existingUser) {
+      return res.status(400).send('Username already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash password using bcryptjs
+    await usersCollection.insertOne({ username, email, password: hashedPassword, createdAt: new Date() });
+
+    res.status(201).send('User registered successfully');
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send("Error registering user");
+  }
+});
+
+// User login endpoint
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send('กรุณากรอกข้อมูลให้ครบถ้วน');
+  }
+
+  try {
+    const usersCollection = client.db("Link").collection("User");
+    const user = await usersCollection.findOne({ username });
+
+    if (!user) {
+      return res.status(401).send('Invalid username or password');
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password); // Compare password using bcryptjs
+    if (!passwordMatch) {
+      return res.status(401).send('Invalid username or password');
+    }
+
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).send("Error logging in");
+  }
+});
+
+// User logout endpoint
+app.post('/logout', (req, res) => {
+  try {
+    res.status(200).send('Logout successful');
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).send('Error during logout');
+  }
+});
+
 // Serve environment variables to the frontend
 app.get('/env', (req, res) => {
   res.json({
@@ -218,6 +303,29 @@ app.get('/env', (req, res) => {
     CLIENT_ID: process.env.CLIENT_ID,
     FOLDER_ID: process.env.FOLDER_ID,
   });
+});
+
+// Route to fetch the current user's data
+app.get('/current-user', async (req, res) => {
+    try {
+        const username = req.headers['x-username']; // รับ username จาก header
+        if (!username) {
+            return res.status(400).json({ error: 'กรุณาส่ง username ใน header' });
+        }
+
+        const usersCollection = client.db("Link").collection("User");
+        const user = await usersCollection.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ error: 'ไม่พบผู้ใช้ในฐานข้อมูล' });
+        }
+
+        // ส่งข้อมูล username และ email กลับไปยัง client
+        res.status(200).json({ username: user.username, email: user.email });
+    } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:', error);
+        res.status(500).json({ error: 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์' });
+    }
 });
 
 // Helper function to get user IP
