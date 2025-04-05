@@ -174,7 +174,7 @@ nav a i {
     text-align: right;
 }
 
-.profile-name, .profile-email, #visitorCount {
+.profile-name, .profile-email, #number_of_links {
     text-align: left;
     margin: 0;
     color: var(--dark-color);
@@ -437,7 +437,7 @@ footer {
         margin-bottom: 5px;
     }
     
-    .profile-name, .profile-email, #visitorCount {
+    .profile-name, .profile-email, #number_of_links {
         text-align: center;
     }
     
@@ -476,7 +476,7 @@ footer {
         font-size: 1.1rem;
     }
     
-    .profile-name, .profile-email, #visitorCount {
+    .profile-name, .profile-email, #number_of_links {
         font-size: 1rem;
     }
 }

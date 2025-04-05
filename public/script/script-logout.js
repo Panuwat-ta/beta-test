@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial setup
     const isLoggedIn = localStorage.getItem('username') ? true : false; // Use actual login status
     updateNavLinks(isLoggedIn);
-    fetchDailyVisitors();
+    fetchUserLinksCount();
     fetchUserProfile();
 });
 
@@ -44,18 +44,26 @@ function setActive(element) {
     element.classList.add('active');
 }
 
-// Fetch and display today's visitor count
-async function fetchDailyVisitors() {
-    const visitorCountElement = document.getElementById('visitorCount');
-    if (!visitorCountElement) return;
+// Fetch and display total links count for logged-in user
+async function fetchUserLinksCount() {
+    const linksCountElement = document.getElementById('number_of_links');
+    if (!linksCountElement) return;
     
+    const username = localStorage.getItem('username');
+    if (!username) {
+        linksCountElement.textContent = "Please login to see your links";
+        return;
+    }
+
     try {
-        const response = await fetch('/daily-visitors');
+        // เรียก API เพื่อนับจำนวนลิงก์ของผู้ใช้ปัจจุบัน
+        const response = await fetch(`/user-links-count?username=${encodeURIComponent(username)}`);
         const data = await response.json();
-        visitorCountElement.textContent = `Visitors today: ${data.visitors}`;
+        
+        linksCountElement.textContent = ` ${data.count}`;
     } catch (error) {
-        console.error("Error fetching daily visitors:", error);
-        visitorCountElement.textContent = "Unable to load visitor count.";
+        console.error("Error fetching user links count:", error);
+        linksCountElement.textContent = "Unable to load your links count.";
     }
 }
 

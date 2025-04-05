@@ -132,6 +132,24 @@ app.post('/add-link', async (req, res) => {
   }
 });
 
+// Route สำหรับนับจำนวนลิงก์ของผู้ใช้
+app.get('/user-links-count', async (req, res) => {
+  const { username } = req.query;
+  
+  if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+  }
+
+  try {
+      const collection = client.db("Link").collection("link");
+      const count = await collection.countDocuments({ username });
+      res.json({ count });
+  } catch (error) {
+      console.error("Error counting user links:", error);
+      res.status(500).json({ error: "Error counting user links" });
+  }
+});
+
 // Route สำหรับแก้ไขชื่อลิงก์
 app.put('/edit-link/:id', async (req, res) => {
   const { id } = req.params;
