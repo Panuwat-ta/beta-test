@@ -122,7 +122,7 @@ app.post('/add-link', async (req, res) => {
       url, 
       name, 
       date,
-      username: username || 'anonymous' // ถ้าไม่มี username ให้ใช้ 'anonymous'
+      username: username || 'Anonymous' // ถ้าไม่มี username ให้ใช้ 'Anonymous'
     });
     
     res.status(201).send('เพิ่มลิงก์สำเร็จ');
@@ -150,57 +150,23 @@ app.get('/user-links-count', async (req, res) => {
   }
 });
 
-// Route สำหรับแก้ไขชื่อลิงก์
+// Route สำหรับแก้ไขลิงก์ (ทั้งชื่อและ URL)
 app.put('/edit-link/:id', async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, url } = req.body;
 
-  console.log('Received edit request:', { id, name }); // เพิ่ม log เพื่อดูข้อมูลที่ส่งมา
+  console.log('Received edit request:', { id, name, url }); // Log ข้อมูลที่ส่งมา
 
-  if (!name) {
-      console.log('Name is missing');
-      return res.status(400).send('ต้องระบุชื่อใหม่');
+  // ตรวจสอบว่ามีข้อมูลที่จะแก้ไขหรือไม่
+  if (!name && !url) {
+    console.log('No data to update');
+    return res.status(400).send('ต้องระบุชื่อหรือ URL ใหม่');
   }
 
-  try {
-      const collection = client.db("Link").collection("link");
-      
-      // ตรวจสอบว่า id ถูกต้องหรือไม่
-      if (!ObjectId.isValid(id)) {
-          console.log('Invalid ObjectId:', id);
-          return res.status(400).send('ID ไม่ถูกต้อง');
-      }
-
-      const result = await collection.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { name: name } }
-      );
-
-      console.log('Update result:', result); // ดูผลลัพธ์
-
-      if (result.matchedCount === 0) {
-          return res.status(404).send('ไม่พบลิงก์ที่ต้องการแก้ไข');
-      }
-
-      if (result.modifiedCount === 0) {
-          return res.status(400).send('ไม่มีการเปลี่ยนแปลงข้อมูล');
-      }
-
-      res.status(200).send('แก้ไขชื่อลิงก์สำเร็จ');
-  } catch (error) {
-      console.error("Error updating link:", error);
-      res.status(500).send(`Error updating link: ${error.message}`);
-  }
-});
-
-
-// Route สำหรับแก้ไข URL ของลิงก์
-app.put('/edit-link-url/:id', async (req, res) => {
-  const { id } = req.params;
-  const { url } = req.body;
-
-  if (!url) {
-    return res.status(400).send('ต้องระบุ URL ใหม่');
+  // ตรวจสอบ URL ถ้ามีการส่งมา
+  if (url && !isValidUrl(url)) {
+    console.log('Invalid URL:', url);
+    return res.status(400).send('URL ไม่ถูกต้อง');
   }
 
   try {
@@ -208,28 +174,46 @@ app.put('/edit-link-url/:id', async (req, res) => {
     
     // ตรวจสอบว่า id ถูกต้องหรือไม่
     if (!ObjectId.isValid(id)) {
-        return res.status(400).send('ID ไม่ถูกต้อง');
+      console.log('Invalid ObjectId:', id);
+      return res.status(400).send('ID ไม่ถูกต้อง');
     }
 
+    // สร้าง object สำหรับการอัปเดต
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (url) updateData.url = url;
+
     const result = await collection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { url: url } }
+      { _id: new ObjectId(id) },
+      { $set: updateData }
     );
 
+    console.log('Update result:', result);
+
     if (result.matchedCount === 0) {
-        return res.status(404).send('ไม่พบลิงก์ที่ต้องการแก้ไข');
+      return res.status(404).send('ไม่พบลิงก์ที่ต้องการแก้ไข');
     }
 
     if (result.modifiedCount === 0) {
-        return res.status(400).send('ไม่มีการเปลี่ยนแปลงข้อมูล');
+      return res.status(400).send('ไม่มีการเปลี่ยนแปลงข้อมูล');
     }
 
-    res.status(200).send('แก้ไข URL ลิงก์สำเร็จ');
+    res.status(200).send('แก้ไขลิงก์สำเร็จ');
   } catch (error) {
-    console.error("Error updating link URL:", error);
-    res.status(500).send(`Error updating link URL: ${error.message}`);
+    console.error("Error updating link:", error);
+    res.status(500).send(`เกิดข้อผิดพลาดในการแก้ไขลิงก์: ${error.message}`);
   }
 });
+
+// ฟังก์ชันตรวจสอบ URL
+function isValidUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 // Route สำหรับลบลิงก์
 app.delete('/delete-link/:id', async (req, res) => {
@@ -254,14 +238,31 @@ app.post('/register', async (req, res) => {
 
   try {
     const usersCollection = client.db("Link").collection("User");
-    const existingUser = await usersCollection.findOne({ username });
+    
+    // Check if username or email already exists
+    const existingUser = await usersCollection.findOne({
+      $or: [
+        { username: username },
+        { email: email }
+      ]
+    });
 
     if (existingUser) {
-      return res.status(400).send('Username already exists');
+      if (existingUser.username === username) {
+        return res.status(400).send('Username already exists');
+      }
+      if (existingUser.email === email) {
+        return res.status(400).send('Email already exists');
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10); // Hash password using bcryptjs
-    await usersCollection.insertOne({ username, email, password: hashedPassword, createdAt: new Date() });
+    await usersCollection.insertOne({ 
+      username, 
+      email, 
+      password: hashedPassword, 
+      createdAt: new Date() 
+    });
 
     res.status(201).send('User registered successfully');
   } catch (error) {

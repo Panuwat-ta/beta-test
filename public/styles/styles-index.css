@@ -41,10 +41,9 @@ nav {
 .nav-links {
     display: flex;
     flex: 1;
-    justify-content: flex-end; /* จัดให้ลิงก์ทั้งหมดชิดขวา */
+    justify-content: flex-end;
 }
 
-/* จัดให้ลิงก์ Login อยู่ขวาสุด */
 .nav-links #loginLink,
 .nav-links #logoutLink {
     margin-left: auto;
@@ -115,8 +114,7 @@ nav a i {
 .header img {
     height: 100px;
     width: auto;
-    
-    
+    max-width: 100%;
 }
 
 .header h1 {
@@ -183,13 +181,15 @@ nav a i {
 .data-table td {
     padding: 12px 20px;
     border-bottom: 1px solid #eee;
+    word-break: break-word; /* เพิ่มเพื่อตัดคำอัตโนมัติ */
+    max-width: 300px; /* จำกัดความกว้างสูงสุด */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .data-table tr:last-child td {
     border-bottom: none;
 }
-
-
 
 .action-btn {
     padding: 8px 12px;
@@ -200,6 +200,7 @@ nav a i {
     transition: all 0.2s ease;
     background-color: var(--primary-color);
     color: white;
+    white-space: nowrap; /* ป้องกันปุ่มแตกบรรทัด */
 }
 
 .action-btn:hover {
@@ -219,8 +220,6 @@ nav a i {
     margin-bottom: 20px;
 }
 
-
-
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
@@ -230,8 +229,7 @@ nav a i {
         display: none;
         flex-direction: column;
         width: 100%;
-        justify-content: flex-start; /* ใน mobile ให้กลับมาแสดงแบบปกติ */
-
+        justify-content: flex-start;
     }
 
     .nav-links #loginLink,
@@ -270,8 +268,8 @@ nav a i {
 
     .data-table {
         display: block;
-        overflow-x: visible;
-        white-space: normal;
+        overflow-x: auto;
+        white-space: nowrap;
         background: transparent;
         box-shadow: none;
     }
@@ -300,8 +298,9 @@ nav a i {
         display: flex;
         padding: 8px 0;
         border-bottom: none;
-        word-wrap: break-word;
         word-break: break-word;
+        max-width: 100%;
+        white-space: normal; /* อนุญาตให้ขึ้นบรรทัดใหม่บน mobile */
     }
     
     .data-table td:before {
@@ -326,6 +325,7 @@ nav a i {
     }
 }
 
+
 @media (max-width: 480px) {
     .header {
         padding: 30px 15px;
@@ -342,5 +342,14 @@ nav a i {
     .action-btn {
         padding: 6px 10px;
         font-size: 0.8rem;
+    }
+    
+    .header img {
+        height: 80px;
+    }
+    
+    .data-table td:before {
+        width: 80px;
+        font-size: 0.9rem;
     }
 }

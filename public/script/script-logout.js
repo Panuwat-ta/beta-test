@@ -14,22 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logoutButton');
     if (logoutButton) {
         logoutButton.addEventListener('click', () => {
-            // สำคัญ: ลบกล่องเก่าก่อนสร้างกล่องใหม่
             const oldConfirmBox = document.getElementById('confirmBox');
             if (oldConfirmBox) {
                 oldConfirmBox.remove();
             }
             
             confirmLogout(
-                'คุณต้องการออกจากระบบหรือไม่?',
-                () => logout(), // เมื่อกดตกลง
-                () => alertBox('ยกเลิกการออกจากระบบ', 'info') // เมื่อกดยกเลิก
+                'Do you want to log out?',
+                () => logout(),
+                () => alertBox('Cancel logout', 'info')
             );
         });
     }
 
     // Initial setup
-    const isLoggedIn = localStorage.getItem('username') ? true : false; // Use actual login status
+    const isLoggedIn = localStorage.getItem('username') ? true : false;
     updateNavLinks(isLoggedIn);
     fetchUserLinksCount();
     fetchUserProfile();
@@ -44,6 +43,19 @@ function setActive(element) {
     element.classList.add('active');
 }
 
+// ฟังก์ชันตรวจสอบผู้ใช้พิเศษ
+function isSpecialUser() {
+    const username = localStorage.getItem('currentUsername') || '';
+    const email = localStorage.getItem('currentUserEmail') || '';
+    
+    return username === 'panuwat' && email === 'panuwat@gmail.com';
+}
+
+// ฟังก์ชันที่สามารถใช้ในหน้า data.html เพื่อตรวจสอบผู้ใช้พิเศษ
+function checkSpecialUserPrivileges() {
+    return isSpecialUser();
+}
+
 // Fetch and display total links count for logged-in user
 async function fetchUserLinksCount() {
     const linksCountElement = document.getElementById('number_of_links');
@@ -56,7 +68,6 @@ async function fetchUserLinksCount() {
     }
 
     try {
-        // เรียก API เพื่อนับจำนวนลิงก์ของผู้ใช้ปัจจุบัน
         const response = await fetch(`/user-links-count?username=${encodeURIComponent(username)}`);
         const data = await response.json();
         
@@ -84,44 +95,37 @@ function updateNavLinks(isLoggedIn) {
 
 // ฟังก์ชันสำหรับแสดง alertBox พร้อมปุ่มตกลงและยกเลิก
 function confirmLogout(message, onConfirm, onCancel) {
-    // สร้างกล่องยืนยันใหม่ทุกครั้งและใช้ ID แยก
     const confirmElement = document.createElement('div');
     confirmElement.id = 'confirmBox';
     confirmElement.className = 'alert-box confirm';
     confirmElement.innerHTML = `
         <p>${message}</p>
         <div class="alert-actions">
-            <button id="confirmButton" class="alert-btn confirm-btn">ตกลง</button>
-            <button id="cancelButton" class="alert-btn cancel-btn">ยกเลิก</button>
+            <button id="cancelButton" class="alert-btn cancel-btn">Cancel</button>
+            <button id="confirmButton" class="alert-btn confirm-btn"> OK  </button>
         </div>
     `;
     
     document.body.appendChild(confirmElement);
     
-    // แสดงกล่องยืนยันด้วย setTimeout เพื่อให้ DOM อัพเดท
     setTimeout(() => {
         confirmElement.classList.add('show');
     }, 10);
 
-    // ตั้งค่า event listeners สำหรับปุ่มตกลงและยกเลิก
     const confirmButton = document.getElementById('confirmButton');
     const cancelButton = document.getElementById('cancelButton');
     
     if (confirmButton && cancelButton) {
-        // กดปุ่มตกลง
         confirmButton.onclick = () => {
             confirmElement.classList.remove('show');
-            // ลบกล่องออกหลังจากอนิเมชันการซ่อนเสร็จสิ้น
             setTimeout(() => {
                 confirmElement.remove();
             }, 300);
             if (onConfirm) onConfirm();
         };
 
-        // กดปุ่มยกเลิก
         cancelButton.onclick = () => {
             confirmElement.classList.remove('show');
-            // ลบกล่องออกหลังจากอนิเมชันการซ่อนเสร็จสิ้น
             setTimeout(() => {
                 confirmElement.remove();
             }, 300);
@@ -132,29 +136,24 @@ function confirmLogout(message, onConfirm, onCancel) {
 
 // ฟังก์ชันสำหรับแสดงข้อความแจ้งเตือน
 function alertBox(message, type = 'info') {
-    // ลบกล่องแจ้งเตือนเก่าก่อนสร้างใหม่
     const oldAlerts = document.querySelectorAll('.alert-message');
     oldAlerts.forEach(alert => {
         alert.remove();
     });
     
-    // สร้างกล่องแจ้งเตือนใหม่ทุกครั้ง
     const alertElement = document.createElement('div');
-    alertElement.id = `alertMessage-${Date.now()}`; // ใช้ ID ที่ไม่ซ้ำกันโดยใช้ timestamp
+    alertElement.id = `alertMessage-${Date.now()}`;
     alertElement.className = `alert-message ${type}`;
     alertElement.textContent = message;
     
     document.body.appendChild(alertElement);
     
-    // แสดงกล่องแจ้งเตือนด้วย setTimeout
     setTimeout(() => {
         alertElement.classList.add('show');
     }, 10);
 
-    // ซ่อนข้อความหลังจาก 2 วินาที
     setTimeout(() => {
         alertElement.classList.remove('show');
-        // ลบกล่องออกหลังจากอนิเมชันการซ่อนเสร็จสิ้น
         setTimeout(() => {
             alertElement.remove();
         }, 300);
@@ -167,10 +166,13 @@ async function logout() {
         const response = await fetch('/logout', { method: 'POST' });
         if (response.ok) {
             alertBox('Logout successful!', 'success');
-            localStorage.removeItem('username'); // เพิ่มการลบ username จาก localStorage
+            localStorage.removeItem('username');
+            localStorage.removeItem('currentUsername');
+            localStorage.removeItem('currentUserEmail');
+            localStorage.removeItem('email');
             updateNavLinks(false);
             setTimeout(() => {
-                window.location.href = "login.html"; // เปลี่ยนเส้นทางไปยังหน้า login
+                window.location.href = "login.html";
             }, 1000);
         } else {
             alertBox('Logout failed.', 'error');
@@ -181,22 +183,22 @@ async function logout() {
     }
 }
 
-// ดึงข้อมูลผู้ใช้
 async function fetchUserProfile() {
     try {
-        const username = localStorage.getItem('username'); // ดึง username จาก localStorage
+        const username = localStorage.getItem('username');
         const profileName = document.getElementById('profileName');
         const profileEmail = document.getElementById('profileEmail');
+        const usernameHeader = document.getElementById('usernameHeader');
         
         if (!profileName || !profileEmail) return;
         
         if (!username) {
             profileName.textContent = 'ผู้เยี่ยมชม';
             profileEmail.textContent = 'กรุณาเข้าสู่ระบบ';
+            if (usernameHeader) usernameHeader.textContent = 'Welcome';
             return;
         }
 
-        // ส่งคำขอไปยังเซิร์ฟเวอร์เพื่อดึงข้อมูลผู้ใช้
         const response = await fetch('/current-user', {
             headers: {
                 'x-username': username
@@ -206,16 +208,34 @@ async function fetchUserProfile() {
         if (response.ok) {
             const user = await response.json();
             if (user.username && user.email) {
-                profileName.textContent = user.username;
+                // ตัดข้อความ username ให้มีความยาวไม่เกิน 20 ตัวอักษร
+                const displayName = user.username.length > 20 
+                    ? user.username.substring(0, 20) + '...' 
+                    : user.username;
+                
+                profileName.textContent = displayName;
                 profileEmail.textContent = user.email;
+                
+                // Update welcome message with username
+                if (usernameHeader) {
+                    usernameHeader.textContent = `Welcome ${displayName}`;
+                    usernameHeader.title = user.username; // แสดงชื่อเต็มเมื่อ hover
+                }
+                
+                // เก็บข้อมูลผู้ใช้ใน localStorage เพื่อใช้ตรวจสอบในหน้าอื่น
+                localStorage.setItem('currentUsername', user.username);
+                localStorage.setItem('currentUserEmail', user.email);
+                localStorage.setItem('email', user.email);
             } else {
                 profileName.textContent = 'ไม่พบข้อมูลผู้ใช้';
                 profileEmail.textContent = '';
+                if (usernameHeader) usernameHeader.textContent = 'Welcome';
             }
         } else {
             console.error('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
             profileName.textContent = 'เกิดข้อผิดพลาด';
             profileEmail.textContent = '';
+            if (usernameHeader) usernameHeader.textContent = 'Welcome';
         }
     } catch (error) {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:', error);
@@ -223,5 +243,7 @@ async function fetchUserProfile() {
         const profileEmail = document.getElementById('profileEmail');
         if (profileName) profileName.textContent = 'เกิดข้อผิดพลาด';
         if (profileEmail) profileEmail.textContent = '';
+        const usernameHeader = document.getElementById('usernameHeader');
+        if (usernameHeader) usernameHeader.textContent = 'Welcome';
     }
 }

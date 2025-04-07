@@ -68,10 +68,10 @@
                 if (row.classList.contains('empty-state')) return;
                 
                 const cells = row.getElementsByTagName('td');
-                const name = cells[2].textContent.toLowerCase();
-                const url = cells[1].textContent.toLowerCase();
+                const name = cells[2].textContent.toLowerCase();       // LinkName (คอลัมน์ที่ 3)
+                const username = cells[3].textContent.toLowerCase();   // Username (คอลัมน์ที่ 4)
                 
-                if (name.includes(query) || url.includes(query)) {
+                if (name.includes(query) || username.includes(query)) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
