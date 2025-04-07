@@ -13,15 +13,25 @@
 
         async function fetchData() {
             try {
+                const tableBody = document.querySelector('#dataTable tbody');
+                // แสดง loading state
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading data...</p>
+                        </td>
+                    </tr>
+                `;
+        
                 const response = await fetch('/data');
                 const data = await response.json();
-                const tableBody = document.querySelector('#dataTable tbody');
                 tableBody.innerHTML = '';
         
                 if (data.length === 0) {
                     tableBody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="empty-state"> <!-- เปลี่ยนจาก 4 เป็น 5 เพราะมีคอลัมน์เพิ่ม -->
+                            <td colspan="5" class="empty-state">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <h3>No links found</h3>
                                 <p>Add links from the Update page</p>
@@ -46,7 +56,7 @@
                 const tableBody = document.querySelector('#dataTable tbody');
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="empty-state">
+                        <td colspan="5" class="empty-state">
                             <i class="fas fa-exclamation-triangle"></i>
                             <h3>Error loading data</h3>
                             <p>${error.message || 'An unknown error occurred'}</p>
