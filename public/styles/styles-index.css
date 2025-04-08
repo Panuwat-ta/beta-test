@@ -339,7 +339,7 @@ nav a i {
     }
     
     .data-table td:before {
-        content: attr(data-label);
+        content: attr(data-label) ": ";
         font-weight: bold;
         width: 100px;
         flex-shrink: 0;
@@ -361,10 +361,15 @@ nav a i {
         align-items: center;
     }
     
-
+    /* แก้ไขส่วนนี้เพื่อแสดง username พร้อม label */
+    .data-table td[data-label="Username"] {
+        display: flex;
+        align-items: center;
+    }
     
     .data-table td[data-label="Username"]:before {
-        display: none;
+        content: "Username: ";
+        display: inline;
     }
 }
 
@@ -394,6 +399,4 @@ nav a i {
         width: 80px;
         font-size: 0.9rem;
     }
-    
-
 }
