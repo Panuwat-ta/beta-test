@@ -113,12 +113,23 @@ async function register() {
 }
 
 function toggleForm(form) {
+    const loginContainer = document.getElementById('loginContainer');
+    const registerContainer = document.getElementById('registerContainer');
+    const forgotPasswordContainer = document.getElementById('forgotPasswordContainer');
+
+    // Hide all containers first
+    loginContainer.style.display = 'none';
+    registerContainer.style.display = 'none';
+    forgotPasswordContainer.style.display = 'none';
+
+    // Show the requested container
     if (form === 'register') {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('registerContainer').style.display = 'block';
+        registerContainer.style.display = 'block';
+    } else if (form === 'forgot') {
+        forgotPasswordContainer.style.display = 'block';
     } else {
-        document.getElementById('registerContainer').style.display = 'none';
-        document.getElementById('loginContainer').style.display = 'block';
+        // Default to login
+        loginContainer.style.display = 'block';
     }
 }
 
@@ -133,7 +144,78 @@ function togglePasswordVisibility(inputId, icon) {
     }
 }
 
-        // Mobile menu toggle
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
+// Show forgot password prompt
+function showForgotPasswordPrompt() {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('registerContainer').style.display = 'none';
+    document.getElementById('forgotPasswordContainer').style.display = 'block';
+}
+
+// Check credentials and show reset form
+async function checkResetCredentials() {
+    const username = document.getElementById('resetUsername').value.trim();
+    const email = document.getElementById('resetEmail').value.trim();
+
+    try {
+        const response = await fetch('/check-reset-credentials', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, email }),
         });
+
+        const data = await response.json();
+        if (data.valid) {
+            // Show reset password form
+            document.getElementById('credentialsForm').style.display = 'none';
+            document.getElementById('resetForm').style.display = 'block';
+        } else {
+            alertBox('Invalid username or email combination', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alertBox('An error occurred', 'error');
+    }
+}
+
+// Reset password
+async function resetPassword() {
+    const username = document.getElementById('resetUsername').value.trim();
+    const email = document.getElementById('resetEmail').value.trim();
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+    if (newPassword !== confirmNewPassword) {
+        alertBox('Passwords do not match', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch('/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, email, newPassword }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alertBox('Password reset successful', 'success');
+            setTimeout(() => {
+                toggleForm('login');
+            }, 2000);
+        } else {
+            alertBox(data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alertBox('An error occurred', 'error');
+    }
+}
+
+// Mobile menu toggle
+document.getElementById('menuToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('active');
+});

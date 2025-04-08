@@ -181,8 +181,8 @@ nav a i {
 .data-table td {
     padding: 12px 20px;
     border-bottom: 1px solid #eee;
-    word-break: break-word; /* เพิ่มเพื่อตัดคำอัตโนมัติ */
-    max-width: 300px; /* จำกัดความกว้างสูงสุด */
+    word-break: break-word;
+    max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -200,7 +200,7 @@ nav a i {
     transition: all 0.2s ease;
     background-color: var(--primary-color);
     color: white;
-    white-space: nowrap; /* ป้องกันปุ่มแตกบรรทัด */
+    white-space: nowrap;
 }
 
 .action-btn:hover {
@@ -220,7 +220,7 @@ nav a i {
     margin-bottom: 20px;
 }
 
-/* โหลดหน้าเว็บ */
+/* Loading spinner */
 .loading {
     padding: 30px;
     text-align: center;
@@ -240,6 +240,21 @@ nav a i {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* User info styles */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--light-color);
 }
 
 @media (max-width: 768px) {
@@ -271,7 +286,6 @@ nav a i {
     .nav-container {
         flex-direction: column;
         padding: 0px;
-        flex-wrap: wrap;
     }
 
     .header h1 {
@@ -281,11 +295,10 @@ nav a i {
     .header-content {
         flex-direction: column;
         text-align: center;
-        flex-wrap: wrap;
     }
 
     .header img {
-        margin-bottom: 0px;
+        margin-bottom: 15px;
     }
 
     .data-table {
@@ -311,7 +324,7 @@ nav a i {
         flex-direction: column;
         background: white;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(77, 72, 72, 0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         padding: 15px;
         border-bottom: none;
     }
@@ -322,7 +335,7 @@ nav a i {
         border-bottom: none;
         word-break: break-word;
         max-width: 100%;
-        white-space: normal; /* อนุญาตให้ขึ้นบรรทัดใหม่บน mobile */
+        white-space: normal;
     }
     
     .data-table td:before {
@@ -342,11 +355,18 @@ nav a i {
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .search-box {
-        padding: 10px 15px;
+    /* Mobile styles for user info */
+    .user-info {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+
+    
+    .data-table td[data-label="Username"]:before {
+        display: none;
     }
 }
-
 
 @media (max-width: 480px) {
     .header {
@@ -374,4 +394,6 @@ nav a i {
         width: 80px;
         font-size: 0.9rem;
     }
+    
+
 }

@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <a href="#" class="forgot-password">Forgot password?</a>
+                        <a href="#" class="forgot-password" onclick="showForgotPasswordPrompt()">Forgot password?</a>
                     </div>
                     
                     <button type="submit" class="submit-btn">Login</button>
@@ -91,6 +91,45 @@
                     <button type="submit" class="submit-btn">Register</button>
                     <p class="switch-form">Already have an account? <a href="#" onclick="toggleForm('login')">Login here</a></p>
                 </form>
+            </div>
+
+            <!-- Add Forgot Password Container -->
+            <div class="form-container" id="forgotPasswordContainer" style="display: none;">
+                <div class="form-header">
+                    <h2>Reset Password</h2>
+                    <p class="form-description">Enter your account details</p>
+                </div>
+                <div id="credentialsForm">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="resetUsername" class="input-field" placeholder="Username" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="resetEmail" class="input-field" placeholder="Email" required>
+                        </div>
+                    </div>
+                    <button type="button" class="submit-btn" onclick="checkResetCredentials()">Continue</button>
+                </div>
+
+                <div id="resetForm" style="display: none;">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="newPassword" class="input-field" placeholder="New Password" required>
+                        </div>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmNewPassword" class="input-field" placeholder="Confirm New Password" required>
+                        </div>
+                    </div>
+                    <button type="button" class="submit-btn" onclick="resetPassword()">Reset Password</button>
+                </div>
+                
+                <p class="switch-form">
+                    <a href="#" onclick="toggleForm('login')">Back to Login</a>
+                </p>
             </div>
         </div>
     </div>
