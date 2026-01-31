@@ -7,7 +7,7 @@ function alertBox(message, type = 'info') {
     }
     alertElement.textContent = message;
     alertElement.className = `alert-box ${type} show`;
-    
+
     // Hide after 5 seconds
     setTimeout(() => {
         alertElement.classList.remove('show');
@@ -27,7 +27,7 @@ function updateNavLinks(isLoggedIn) {
 }
 
 async function login() {
-    const username = document.getElementById('loginUsername').value.trim();
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
 
     try {
@@ -36,13 +36,15 @@ async function login() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ email, password }),
         });
 
         if (response.ok) {
             const data = await response.json();
             alertBox('Login successful!', 'success');
-            localStorage.setItem('username', username); // เก็บ username ใน localStorage
+            // login สำเร็จ
+            localStorage.setItem('username', data.user.username); // เก็บ username ใน localStorage
+            localStorage.setItem('email', data.user.email);
             updateNavLinks(true); // Update navigation links
             window.location.href = "logout.html"; // Redirect to logout page
         } else {
@@ -55,12 +57,6 @@ async function login() {
         alertBox('An error occurred during login.', 'error');
     }
 }
-
-// Call this function on page load to set the initial state of nav links
-document.addEventListener('DOMContentLoaded', () => {
-    const isLoggedIn = false; // Replace with actual login status check
-    updateNavLinks(isLoggedIn);
-});
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -215,7 +211,17 @@ async function resetPassword() {
     }
 }
 
-// Mobile menu toggle
-document.getElementById('menuToggle').addEventListener('click', function() {
-    document.getElementById('navLinks').classList.toggle('active');
+document.addEventListener('DOMContentLoaded', () => {
+    // Check login status on page load
+    const isLoggedIn = localStorage.getItem('username') !== null;
+    updateNavLinks(isLoggedIn);
+
+    // Menu toggle for mobile
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
 });
