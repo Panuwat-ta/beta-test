@@ -176,15 +176,6 @@ body {
 
 .history-item {
     background: var(--bg-secondary);
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-md);
-    border: 2px solid var(--border-color);
-    transition: all var(--transition-fast);
-    cursor: pointer;
-}
-
-.history-item {
-    background: var(--bg-secondary);
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     border: 2px solid var(--border-color);
@@ -198,8 +189,9 @@ body {
 }
 
 .history-item.active {
-    background: #e7f3ff;
+    background: var(--bg-tertiary);
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
 }
 
 .history-item-header {
@@ -207,6 +199,7 @@ body {
     color: var(--text-primary);
     margin-bottom: var(--spacing-xs);
     font-size: 0.85rem;
+    background: none !important;
 }
 
 .history-item-meta {
@@ -276,13 +269,15 @@ body {
 }
 
 .note-content-view.historical {
-    background-color: #fff9e6;
+    background-color: var(--bg-tertiary);
     padding: var(--spacing-md);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .historical-banner {
-    background-color: #fff3cd;
-    color: #856404;
+    background-color: var(--warning-color);
+    color: #1a1a1a;
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-md);
@@ -290,7 +285,8 @@ body {
     align-items: center;
     gap: var(--spacing-sm);
     font-size: 0.85rem;
-    border: 1px solid #ffeaa7;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
 .historical-banner i {
@@ -485,18 +481,79 @@ body {
     
     .note-modal-container {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        position: relative;
     }
     
+    /* Drawer style for Edit History on mobile */
     .note-history {
-        border-right: none;
-        border-bottom: 2px solid var(--border-color);
-        max-height: 150px;
-        overflow-y: auto;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        z-index: 1001;
+        border-right: 2px solid var(--border-color);
+        border-bottom: none;
+        max-height: none;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .note-history.open {
+        left: 0;
+    }
+    
+    /* Toggle button for history drawer */
+    .history-toggle {
+        display: block !important;
+        position: fixed;
+        top: 70px;
+        left: 10px;
+        z-index: 1000;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: var(--shadow-lg);
+        transition: all var(--transition-fast);
+    }
+    
+    .history-toggle:hover {
+        transform: scale(1.1);
+    }
+    
+    .history-toggle i {
+        transition: transform var(--transition-fast);
+    }
+    
+    .history-toggle.open i {
+        transform: rotate(180deg);
+    }
+    
+    /* Overlay when drawer is open */
+    .history-overlay {
+        display: none !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    
+    .history-overlay.active {
+        display: block !important;
     }
     
     .note-main {
         padding: var(--spacing-lg);
+        padding-top: 60px;
     }
     
     .note-main h2 {
@@ -576,4 +633,14 @@ body {
     .history-item-meta {
         font-size: 0.7rem;
     }
+}
+
+
+/* Hide toggle button on desktop by default */
+.history-toggle {
+    display: none;
+}
+
+.history-overlay {
+    display: none;
 }

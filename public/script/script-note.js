@@ -143,6 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 editHistoryList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
             }
             
+            // Add history toggle button and overlay for mobile
+            if (window.innerWidth <= 768) {
+                if (!document.querySelector('.history-toggle')) {
+                    const toggleBtn = document.createElement('button');
+                    toggleBtn.className = 'history-toggle';
+                    toggleBtn.innerHTML = '<i class="fas fa-history"></i>';
+                    toggleBtn.onclick = toggleHistoryDrawer;
+                    viewNoteModal.querySelector('.modal-content').appendChild(toggleBtn);
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'history-overlay';
+                    overlay.onclick = closeHistoryDrawer;
+                    viewNoteModal.querySelector('.modal-content').appendChild(overlay);
+                }
+            }
+            
             // Force reflow
             void viewNoteModal.offsetWidth;
             
@@ -439,4 +455,37 @@ document.addEventListener('DOMContentLoaded', () => {
             closeViewModal();
         }
     });
+});
+
+
+// Toggle history drawer on mobile
+function toggleHistoryDrawer() {
+    const noteHistory = document.querySelector('.note-history');
+    const toggleBtn = document.querySelector('.history-toggle');
+    const overlay = document.querySelector('.history-overlay');
+    
+    if (noteHistory && toggleBtn && overlay) {
+        noteHistory.classList.toggle('open');
+        toggleBtn.classList.toggle('open');
+        overlay.classList.toggle('active');
+    }
+}
+
+function closeHistoryDrawer() {
+    const noteHistory = document.querySelector('.note-history');
+    const toggleBtn = document.querySelector('.history-toggle');
+    const overlay = document.querySelector('.history-overlay');
+    
+    if (noteHistory && toggleBtn && overlay) {
+        noteHistory.classList.remove('open');
+        toggleBtn.classList.remove('open');
+        overlay.classList.remove('active');
+    }
+}
+
+// Close drawer when selecting a history item on mobile
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.history-item') && window.innerWidth <= 768) {
+        closeHistoryDrawer();
+    }
 });

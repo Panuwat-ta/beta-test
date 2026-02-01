@@ -1,6 +1,6 @@
 // Global state
 let allData = [];
-let currentView = 'grid';
+let currentView = 'list'; // Changed default to 'list'
 let currentTheme = localStorage.getItem('theme') || 'dark';
 
 // Initialize on page load
@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavLinks();
     setupMobileMenu();
     
-    // Load saved view preference
-    const savedView = localStorage.getItem('viewPreference') || 'grid';
+    // Load saved view preference, default to 'list'
+    const savedView = localStorage.getItem('viewPreference') || 'list';
     toggleView(savedView);
 });
 
