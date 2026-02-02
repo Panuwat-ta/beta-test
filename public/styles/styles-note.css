@@ -474,38 +474,26 @@ body {
         gap: var(--spacing-md);
     }
     
-    .modal {
-        padding: 0;
-        align-items: flex-start;
-    }
-    
     .modal-content {
         width: 100%;
-        height: calc(100vh - 60px);
-        max-height: calc(100vh - 60px);
-        margin-top: 60px;
+        height: 100vh;
+        max-height: 100vh;
         border-radius: 0;
-        display: flex;
-        flex-direction: column;
     }
     
     .note-modal-container {
         grid-template-columns: 1fr;
         position: relative;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
     }
     
     /* Drawer style for Edit History on mobile */
     .note-history {
         position: fixed;
         left: -100%;
-        top: 60px;
+        top: 0;
         width: 80%;
         max-width: 300px;
-        height: calc(100vh - 60px);
+        height: 100vh;
         z-index: 1001;
         border-right: 2px solid var(--border-color);
         border-bottom: none;
@@ -553,10 +541,10 @@ body {
     .history-overlay {
         display: none !important;
         position: fixed;
-        top: 60px;
+        top: 0;
         left: 0;
         width: 100%;
-        height: calc(100vh - 60px);
+        height: 100%;
         background: rgba(0, 0, 0, 0.5);
         z-index: 1000;
     }
@@ -568,32 +556,16 @@ body {
     .note-main {
         padding: var(--spacing-md);
         padding-top: 50px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
     }
     
     .note-main h2 {
         font-size: 1.3rem;
         margin-bottom: var(--spacing-sm);
-        flex-shrink: 0;
-    }
-    
-    .note-content-view {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-    }
-    
-    .note-info {
-        flex-shrink: 0;
     }
     
     .modal-buttons {
         flex-direction: row;
         gap: var(--spacing-sm);
-        flex-shrink: 0;
     }
     
     .modal-buttons button {
