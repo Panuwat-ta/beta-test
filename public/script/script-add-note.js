@@ -146,23 +146,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-            noteElement.addEventListener('click', (e) => {
-                const deleteButton = e.target.closest('.delete-btn');
-                const editButton = e.target.closest('.edit-btn');
-
-                if (deleteButton) {
-                    e.stopPropagation();
-                    showDeleteModal(deleteButton.dataset.id);
-                } else if (editButton) {
-                    e.stopPropagation();
-                    const noteContent = notes.find(n => n._id === editButton.dataset.id).content;
-                    showEditModal(editButton.dataset.id, editButton.dataset.name, noteContent);
-                } else {
-                    // Click on card - open edit modal
-                    const noteContent = note.content;
-                    showEditModal(note._id, noteName, noteContent);
-                }
+            
+            // Add click events only to buttons, not the card
+            const editBtn = noteElement.querySelector('.edit-btn');
+            const deleteBtn = noteElement.querySelector('.delete-btn');
+            
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const noteContent = notes.find(n => n._id === editBtn.dataset.id).content;
+                showEditModal(editBtn.dataset.id, editBtn.dataset.name, noteContent);
             });
+            
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showDeleteModal(deleteBtn.dataset.id);
+            });
+            
             notesList.appendChild(noteElement);
         });
     }
