@@ -293,10 +293,10 @@ body {
 }
 
 .modal-content h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: var(--text-primary);
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
     border-bottom: 2px solid var(--border-color);
     font-weight: 700;
 }
@@ -391,7 +391,7 @@ body {
 }
 
 .note-main {
-    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-md) var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -418,9 +418,9 @@ body {
 }
 
 #editNoteName {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
     flex-shrink: 0;
 }
 
@@ -428,9 +428,10 @@ body {
     flex: 1;
     font-family: inherit;
     resize: none;
-    line-height: 1.8;
+    line-height: 1.6;
     overflow-y: auto;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.95rem;
 }
 
 /* Custom scrollbar for textarea */
@@ -484,8 +485,10 @@ body {
     transition: all var(--transition-fast);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-sm);
     white-space: nowrap;
+    min-height: 40px;
 }
 
 /* Note info footer styles */
@@ -493,10 +496,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-sm) 0;
+    padding: var(--spacing-xs) 0;
     border-top: 2px solid var(--border-color);
     flex-shrink: 0;
-    min-height: 50px;
+    min-height: 40px;
 }
 
 .note-info-left {
@@ -508,7 +511,7 @@ body {
 
 .note-info small {
     color: var(--text-tertiary);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     white-space: nowrap;
     display: inline-block;
 }
@@ -765,12 +768,12 @@ body {
     }
     
     .note-main {
-        padding: var(--spacing-lg);
-        padding-top: 60px;
+        padding: var(--spacing-md);
+        padding-top: 50px;
     }
     
     .note-main h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
     
     .modal-buttons {
@@ -780,7 +783,10 @@ body {
     
     .modal-buttons button {
         flex: 1;
-        font-size: 0.85rem;
+        font-size: 0.99rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        justify-content: center;
+        min-height: 44px;
     }
     
     .note-info {
