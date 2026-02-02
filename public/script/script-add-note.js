@@ -174,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         editNoteModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
+        // Add to history for back button support
+        history.pushState({ modal: 'editNote' }, '');
+        
         // Show loading state
         editNoteName.value = 'Loading...';
         editNoteTextarea.value = 'Loading note content...';
@@ -227,6 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('deletePassword').value = '';
         document.getElementById('deleteError').style.display = 'none';
         deleteConfirmModal.style.display = 'flex';
+        
+        // Add to history for back button support
+        history.pushState({ modal: 'deleteNote' }, '');
         
         // Lock body scroll
         document.body.style.overflow = 'hidden';
@@ -338,6 +344,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editNoteModal.style.display = 'none';
         editNoteModal.classList.remove('active');
         
+        // Remove from history if it was added
+        if (window.history.state && window.history.state.modal === 'editNote') {
+            history.back();
+        }
+        
         // Unlock body scroll
         document.body.style.overflow = '';
         
@@ -353,6 +364,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('deleteError').style.display = 'none';
         deleteConfirmModal.style.display = 'none';
         
+        // Remove from history if it was added
+        if (window.history.state && window.history.state.modal === 'deleteNote') {
+            history.back();
+        }
+        
         // Unlock body scroll
         document.body.style.overflow = '';
     }
@@ -361,6 +377,22 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelDeleteBtn.addEventListener('click', closeDeleteModal);
     saveEditedNoteBtn.addEventListener('click', editNote);
     cancelEditBtn.addEventListener('click', closeEditModal);
+    
+    // Handle back button for modals
+    window.addEventListener('popstate', function(e) {
+        if (editNoteModal.style.display === 'flex') {
+            e.preventDefault();
+            editNoteModal.style.display = 'none';
+            editNoteModal.classList.remove('active');
+            document.body.style.overflow = '';
+            currentNoteId = null;
+        } else if (deleteConfirmModal.style.display === 'flex') {
+            e.preventDefault();
+            deleteConfirmModal.style.display = 'none';
+            document.body.style.overflow = '';
+            currentNoteId = null;
+        }
+    });
 
     async function fetchNoteHistory(noteId) {
         try {
