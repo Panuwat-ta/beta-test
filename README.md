@@ -1,313 +1,606 @@
-# Data Links - Modern Link & Note Management Platform
+# 🔗 Data Links - Modern Link & Note Management Platform
 
-A modern, secure web application for organizing your digital resources with dark/light theme support, mobile-friendly design, and powerful management features.
+<div align="center">
 
-![Version](https://img.shields.io/badge/version-2.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)
+![Data Links](public/img/gif.gif)
+
+**A modern, secure platform for organizing your digital resources**
+
+[![Node.js](https://img.shields.io/badge/Node.js-v14+-green.svg)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-v4.21-blue.svg)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-v6.12-green.svg)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/License-ISC-yellow.svg)](LICENSE)
+
+[Live Demo](https://your-demo-url.vercel.app) • [Report Bug](https://github.com/yourusername/data-links/issues) • [Request Feature](https://github.com/yourusername/data-links/issues)
+
+</div>
+
+---
+
+## � Table of Contents
+
+- [About](#-about)
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [API Documentation](#-api-documentation)
+- [Project Structure](#-project-structure)
+- [Usage Guide](#-usage-guide)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
+
+---
+
+## 🎯 About
+
+**Data Links** is a comprehensive web application designed to help you manage your links, notes, and files in one centralized platform. With a beautiful dark/light theme, responsive design, and powerful features, it's the perfect tool for organizing your digital life.
+
+### Why Data Links?
+
+- 🎨 **Beautiful UI/UX** - Modern design with smooth animations
+- 🌓 **Dark/Light Theme** - Easy on the eyes, day or night
+- 📱 **Fully Responsive** - Works perfectly on all devices
+- 🔒 **Secure** - Password hashing and secure authentication
+- ☁️ **Cloud Integration** - Google Drive integration for file management
+- 📝 **Rich Features** - Notes with edit history, link management, and more
+
+---
 
 ## ✨ Features
 
-### 🎨 Modern UI/UX
-- **Dark/Light Theme Toggle** - Switch between themes with a single click
-- **Grid/List View** - Choose your preferred viewing mode on the home page
-- **Responsive Design** - Fully optimized for desktop, tablet, and mobile devices
-- **Smooth Animations** - Professional transitions and hover effects
-- **Modern Design System** - Consistent styling with CSS custom properties
-
-### 🔐 User Management
-- User registration and authentication
-- Profile management with image upload
-- Password reset functionality
-- Secure session management
-
-### 🔗 Link Management
-- Add, edit, and delete links
-- Search and filter functionality
-- Category organization
-- User-specific link collections
-- Link statistics and analytics
+### � Link Management
+- ✅ Add, edit, and delete links
+- ✅ Search and filter links
+- ✅ Grid and List view options
+- ✅ User profile display
+- ✅ Category organization
 
 ### 📝 Note Management
-- Create and edit notes
-- Rich text editing
-- Edit history tracking
-- Note organization and search
-- User-specific notes
+- ✅ Create and edit notes
+- ✅ Rich text editing
+- ✅ Complete edit history tracking
+- ✅ Version comparison
+- ✅ Mobile-friendly drawer for history
+- ✅ Copy note content
+- ✅ Sort by last modified date
 
 ### ☁️ Google Drive Integration
-- Browse Google Drive files
-- Upload files with drag-and-drop
-- Download files and folders
-- Folder navigation
-- File type filtering
+- ✅ Browse files and folders
+- ✅ Upload files with drag & drop
+- ✅ Download files and folders as ZIP
+- ✅ Create new folders
+- ✅ Real-time upload progress
 
-### 📱 Mobile Features
-- Responsive navigation with hamburger menu
-- Touch-friendly interface
-- Mobile-optimized layouts
-- Adaptive grid systems
+### 👤 User Management
+- ✅ User registration and login
+- ✅ Profile management
+- ✅ Profile image upload
+- ✅ Password reset
+- ✅ Username/email availability check
 
-## 🚀 Quick Start
+### 🎨 Theme System
+- ✅ Dark theme (default)
+- ✅ Light theme
+- ✅ Toggle in navbar
+- ✅ Persistent theme preference
+- ✅ Smooth transitions
+
+### � Responsive Design
+- ✅ Desktop optimized
+- ✅ Tablet friendly
+- ✅ Mobile responsive
+- ✅ Touch-friendly interface
+- ✅ Mobile menu
+
+### 📊 Analytics
+- ✅ Daily visitor tracking
+- ✅ IP logging
+- ✅ User link count
+
+---
+
+## 📸 Screenshots
+
+<details>
+<summary>Click to view screenshots</summary>
+
+### Home Page
+![Home Page](docs/screenshots/home.png)
+
+### Dark Theme
+![Dark Theme](docs/screenshots/dark-theme.png)
+
+### Light Theme
+![Light Theme](docs/screenshots/light-theme.png)
+
+### Notes Management
+![Notes](docs/screenshots/notes.png)
+
+### Mobile View
+![Mobile](docs/screenshots/mobile.png)
+
+</details>
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB ODM
+- **bcryptjs** - Password hashing
+- **Multer** - File upload handling
+- **JSZip** - ZIP file creation
+- **dotenv** - Environment variables
+
+### Frontend
+- **HTML5** - Markup
+- **CSS3** - Styling (Custom Properties, Flexbox, Grid)
+- **JavaScript (ES6+)** - Client-side logic
+- **Font Awesome** - Icons
+- **Google APIs** - Drive integration
+
+### Deployment
+- **Vercel** - Hosting platform
+- **MongoDB Atlas** - Cloud database
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
+
+- Node.js v14 or higher
+- npm or yarn
 - MongoDB database
-- Google Drive API credentials (for file features)
+- Google Drive API credentials (optional)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
-git clone <repository-url>
-cd wedapp-link
+git clone https://github.com/yourusername/data-links.git
+cd data-links
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
+3. **Set up environment variables**
+```bash
+cp .env.example .env
+```
+Edit `.env` file with your credentials (see [Environment Variables](#-environment-variables))
+
+4. **Start the server**
+```bash
+npm start
+```
+
+5. **Open your browser**
+```
+http://localhost:3000
+```
+
+---
+
+## � Environment Variables
+
+Create a `.env` file in the root directory:
+
 ```env
-MONGODB_URI=your_mongodb_connection_string
+# Server Configuration
 PORT=3000
+
+# MongoDB Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/Link?retryWrites=true&w=majority
+
+# Google Drive API (Optional)
 API_KEY=your_google_api_key
 CLIENT_ID=your_google_client_id
 FOLDER_ID=your_google_drive_folder_id
 ```
 
-4. Start the server:
-```bash
-npm start
+### Getting MongoDB URI
+1. Create account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a cluster
+3. Get connection string
+4. Replace `<password>` with your password
+
+### Getting Google Drive API Credentials (Optional)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project
+3. Enable Google Drive API
+4. Create credentials (API Key and OAuth 2.0 Client ID)
+5. Add authorized JavaScript origins
+
+---
+
+## � API Documentation
+
+### Authentication Endpoints
+
+#### Register User
+```http
+POST /register
+Content-Type: application/json
+
+{
+  "username": "string",
+  "email": "string",
+  "password": "string"
+}
 ```
 
-5. Open your browser and navigate to:
+#### Login
+```http
+POST /login
+Content-Type: application/json
+
+{
+  "email": "string",
+  "password": "string"
+}
 ```
-http://localhost:3000
+
+#### Reset Password
+```http
+POST /reset-password
+Content-Type: application/json
+
+{
+  "username": "string",
+  "email": "string",
+  "newPassword": "string"
+}
 ```
 
-## 📖 Usage
+### Link Endpoints
 
-### Theme Toggle
-- Click the floating button in the bottom-right corner to switch between dark and light themes
-- Your preference is automatically saved
+#### Get All Links
+```http
+GET /data
+```
 
-### Grid/List View (Home Page)
-- Use the view toggle buttons to switch between card-based grid view and traditional list view
-- Your preference is automatically saved
+#### Add Link
+```http
+POST /add-link
+Content-Type: application/json
+x-username: string
 
-### Adding Links
-1. Navigate to the "Update" page
-2. Enter the URL and link name
-3. Click "Add Link"
+{
+  "url": "string",
+  "name": "string",
+  "date": "string"
+}
+```
 
-### Managing Notes
-1. Go to "Add Note" to create a new note
-2. View all notes in the "View Notes" page
-3. Click on a note to view its edit history
+#### Edit Link
+```http
+PUT /edit-link/:id
+Content-Type: application/json
 
-### File Management
-1. Sign in with Google on the "Upload" page
-2. Drag and drop files or click to select
-3. Choose destination folder
-4. Upload to Google Drive
+{
+  "name": "string",
+  "url": "string"
+}
+```
 
-## 🛠️ Technology Stack
+#### Delete Link
+```http
+DELETE /delete-link/:id
+```
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Database
-- **bcryptjs** - Password hashing
-- **Multer** - File upload handling
-- **JSZip** - ZIP file creation
+### Note Endpoints
 
-### Frontend
-- **HTML5** - Markup
-- **CSS3** - Styling with custom properties
-- **JavaScript (ES6+)** - Client-side logic
-- **Font Awesome** - Icons
-- **Google APIs** - Drive integration
+#### Get User Notes
+```http
+GET /api/notes?username=string
+```
+
+#### Create Note
+```http
+POST /api/notes
+Content-Type: application/json
+x-username: string
+
+{
+  "noteName": "string",
+  "content": "string"
+}
+```
+
+#### Update Note
+```http
+PUT /api/notes/:id
+Content-Type: application/json
+x-username: string
+
+{
+  "noteName": "string",
+  "content": "string"
+}
+```
+
+#### Delete Note
+```http
+DELETE /api/notes/:id
+```
+
+### User Endpoints
+
+#### Get Current User
+```http
+GET /current-user
+x-email: string
+```
+
+#### Update Profile
+```http
+POST /update-profile
+Content-Type: application/json
+x-username: string
+
+{
+  "username": "string",
+  "email": "string",
+  "profileImage": "string"
+}
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
-wedapp-link/
-├── public/
-│   ├── img/                    # Images and assets
-│   ├── script/                 # Client-side JavaScript
-│   │   ├── theme-manager.js    # Shared theme functionality
-│   │   ├── script-index.js     # Home page logic
-│   │   └── ...                 # Other page scripts
-│   └── styles/                 # CSS files
-│       ├── theme.css           # Global theme system
-│       ├── styles-index.css    # Home page styles
-│       └── ...                 # Other page styles
+data-links/
+├── public/                     # Static files
+│   ├── img/                   # Images and assets
+│   ├── script/                # Client-side JavaScript
+│   │   ├── theme-manager.js   # Theme management
+│   │   ├── mobile-menu.js     # Mobile menu handler
+│   │   ├── script-index.js    # Home page logic
+│   │   ├── script-login.js    # Authentication logic
+│   │   ├── script-data.js     # Link management
+│   │   ├── script-files.js    # File browser
+│   │   ├── script-upload.js   # File upload
+│   │   ├── script-note.js     # Note viewer
+│   │   ├── script-add-note.js # Note editor
+│   │   ├── script-logout.js   # Profile management
+│   │   ├── script-about.js    # About page
+│   │   └── script-suport.js   # Support page
+│   └── styles/                # CSS files
+│       ├── theme.css          # Global theme system
+│       ├── navbar.css         # Navigation styles
+│       ├── styles-index.css   # Home page styles
+│       ├── styles-login.css   # Login page styles
+│       ├── styles-data.css    # Link management styles
+│       ├── styles-files.css   # File browser styles
+│       ├── styles-upload.css  # Upload page styles
+│       ├── styles-note.css    # Note viewer styles
+│       ├── styles-add-note.css # Note editor styles
+│       ├── styles-logout.css  # Profile page styles
+│       ├── styles-about.css   # About page styles
+│       └── styles-suport.css  # Support page styles
 ├── templates/                  # HTML templates
 │   ├── index.html             # Home page
 │   ├── login.html             # Login/Register
 │   ├── date.html              # Update links
-│   ├── files.html             # Browse files
-│   ├── upload.html            # Upload files
-│   ├── note.html              # View notes
-│   ├── add-note.html          # Add note
-│   ├── about.html             # About page
+│   ├── files.html             # File browser
+│   ├── upload.html            # File upload
+│   ├── note.html              # Note viewer
+│   ├── add-note.html          # Note editor
 │   ├── logout.html            # Profile page
+│   ├── about.html             # About page
 │   └── suport.html            # Support page
 ├── index.js                    # Main server file
 ├── package.json               # Dependencies
 ├── .env                       # Environment variables
+├── .gitignore                 # Git ignore rules
+├── vercel.json                # Vercel configuration
 └── README.md                  # This file
 ```
 
-## 🎨 Theme System
+---
 
-The application includes a comprehensive theme system with:
-- CSS custom properties for easy customization
-- Dark and light theme variants
-- Smooth transitions between themes
-- Persistent theme preference
-- Theme-aware components
+## 📖 Usage Guide
 
-### Customizing Themes
+### For Users
 
-Edit `public/styles/theme.css` to customize colors:
+#### Getting Started
+1. **Register an account** - Click "Login" → "Register here"
+2. **Login** - Enter your email and password
+3. **Explore features** - Use the navigation menu
 
-```css
-:root {
-    --primary-color: #4285f4;
-    --secondary-color: #34a853;
-    /* ... more variables */
-}
+#### Managing Links
+1. Go to **Home** page
+2. Click **"Add Link"** button
+3. Enter URL and name
+4. View in Grid or List mode
+5. Search and filter as needed
 
-[data-theme="dark"] {
-    --bg-primary: #0f1419;
-    --text-primary: #e8eaed;
-    /* ... more variables */
-}
-```
+#### Managing Notes
+1. Go to **"Add Note"** page
+2. Enter note name and content
+3. Click **"Save Note"**
+4. View all notes in **"Notes"** page
+5. Click any note to view/edit
+6. See complete edit history
 
-## 📱 Responsive Breakpoints
+#### Uploading Files
+1. Go to **"Upload"** page
+2. Drag & drop files or click to browse
+3. Monitor upload progress
+4. Files saved to Google Drive
 
-- **Desktop**: > 1024px
-- **Tablet**: 768px - 1024px
-- **Mobile**: < 768px
-- **Small Mobile**: < 480px
+#### Managing Profile
+1. Click your profile picture
+2. Update username, email, or profile image
+3. Change password if needed
+4. Save changes
 
-## 🔒 Security Features
+### For Developers
 
-- Password hashing with bcryptjs
-- Secure session management
-- Input validation and sanitization
-- HTTPS support (recommended for production)
-- Environment variable protection
+#### Adding New Features
+1. Create new route in `index.js`
+2. Add HTML template in `templates/`
+3. Create CSS file in `public/styles/`
+4. Add JavaScript in `public/script/`
+5. Update navigation in all templates
 
-## 🐛 Bug Fixes (v2.0)
+#### Customizing Theme
+1. Edit CSS variables in `public/styles/theme.css`
+2. Modify colors, spacing, fonts
+3. Changes apply globally
 
-- Fixed mobile menu toggle functionality
-- Resolved date parsing issues
-- Fixed profile image loading with fallback
-- Improved modal close functionality
-- Fixed navigation link active states
-- Resolved login/logout state synchronization
-- Fixed search and filter functionality
-- Improved error handling across all pages
+#### Database Schema
+See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed schema
 
-## 🚀 Performance Optimizations
+---
 
-- Efficient data caching
-- Optimized rendering
-- Reduced API calls
-- Lazy loading for images
-- Debounced search input
-- Minified assets (recommended for production)
+## 🎨 Design System
 
-## 🌐 Browser Support
+### Color Palette
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Mobile browsers (iOS Safari, Chrome Mobile)
+#### Light Theme
+- Background: `#f5f7fa`
+- Surface: `#ffffff`
+- Text: `#1a1a1a`
 
-## 📝 API Endpoints
+#### Dark Theme
+- Background: `#0f1419`
+- Surface: `#1a2332`
+- Text: `#e8eaed`
 
-### Authentication
-- `POST /register` - Register new user
-- `POST /login` - User login
-- `POST /logout` - User logout
-- `POST /reset-password` - Reset password
+#### Brand Colors
+- Primary: `#4285f4` (Blue)
+- Secondary: `#34a853` (Green)
+- Accent: `#ea4335` (Red)
+- Warning: `#fbbc04` (Yellow)
 
-### Links
-- `GET /data` - Get all links
-- `POST /add-link` - Add new link
-- `PUT /edit-link/:id` - Edit link
-- `DELETE /delete-link/:id` - Delete link
+### Typography
+- Font Family: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto`
+- Base Size: `16px`
+- Scale: `0.85rem` - `2.5rem`
 
-### Notes
-- `GET /api/notes` - Get user notes
-- `POST /api/notes` - Create note
-- `GET /api/notes/:id` - Get specific note
-- `PUT /api/notes/:id` - Update note
-- `DELETE /api/notes/:id` - Delete note
+### Spacing
+- XS: `4px`
+- SM: `8px`
+- MD: `16px`
+- LG: `24px`
+- XL: `32px`
+- 2XL: `48px`
 
-### User
-- `GET /current-user` - Get current user data
-- `POST /update-profile` - Update user profile
-- `POST /verify-password` - Verify password
-
-### Files
-- `GET /api/folders` - Get Google Drive folders
-- `POST /api/folders` - Create folder
-- `POST /start-upload` - Start file upload
-- `GET /upload-progress/:uploadId` - Get upload progress
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+4. **Push to the branch**
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. **Open a Pull Request**
+
+### Code Style
+- Use ES6+ features
+- Follow existing code structure
+- Add comments for complex logic
+- Test before submitting
+
+---
+
+## 🐛 Known Issues
+
+- Google Drive integration requires API credentials
+- Large file uploads may timeout on slow connections
+- Mobile drawer animation may lag on older devices
+
+---
+
+## 🔮 Roadmap
+
+### Version 2.1 (Q2 2026)
+- [ ] PWA support
+- [ ] Offline mode
+- [ ] Push notifications
+- [ ] Advanced search
+
+### Version 2.2 (Q3 2026)
+- [ ] Real-time collaboration
+- [ ] Tags and categories
+- [ ] Export/Import data
+- [ ] Multi-language support
+
+### Version 3.0 (Q4 2026)
+- [ ] Mobile apps (iOS/Android)
+- [ ] Browser extensions
+- [ ] API documentation
+- [ ] Third-party integrations
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Developer
+---
+
+## 👨‍💻 Author
 
 **Panuwat Takham**
-- Email: panuwattakham2002@gmail.com
-- Facebook: [Panuwat Takham](https://web.facebook.com/panuwat.takham.b/)
-- Instagram: [@panuwat.z](https://www.instagram.com/panuwat.z/)
+
+- 📧 Email: panuwattakham2002@gmail.com
+- 🌐 Facebook: [Panuwat Takham](https://web.facebook.com/panuwat.takham.b/)
+- 📷 Instagram: [@panuwat.z](https://www.instagram.com/panuwat.z/)
+
+---
 
 ## 🙏 Acknowledgments
 
-- Font Awesome for icons
-- Google for Drive API
-- MongoDB for database
-- Express.js community
-
-## 📞 Support
-
-If you find this project helpful, consider supporting the developer through the Support page in the application.
+- [Font Awesome](https://fontawesome.com/) - Icons
+- [Google Drive API](https://developers.google.com/drive) - File storage
+- [MongoDB](https://www.mongodb.com/) - Database
+- [Express.js](https://expressjs.com/) - Web framework
+- [Vercel](https://vercel.com/) - Hosting
 
 ---
 
-**Version**: 2.0  
-**Last Updated**: February 2026  
-**Status**: Active Development
+## 💖 Support
 
-## 🔮 Future Enhancements
+If you find this project helpful, consider supporting the developer:
 
-- [ ] PWA support for offline functionality
-- [ ] Real-time collaboration features
-- [ ] Advanced analytics dashboard
-- [ ] Export/Import functionality
-- [ ] API documentation with Swagger
-- [ ] Automated testing suite
-- [ ] Docker containerization
-- [ ] CI/CD pipeline
-- [ ] Multi-language support
-- [ ] Advanced search with filters
+- ⭐ Star this repository
+- 🐛 Report bugs
+- 💡 Suggest new features
+- 📢 Share with others
+- ☕ [Buy me a coffee](https://your-support-link.com)
 
 ---
 
-Made with ❤️ by Panuwat Takham
+<div align="center">
+
+**Made with ❤️ by Panuwat Takham**
+
+**Version 2.0** • **Last Updated: February 2026**
+
+[⬆ Back to Top](#-data-links---modern-link--note-management-platform)
+
+</div>
