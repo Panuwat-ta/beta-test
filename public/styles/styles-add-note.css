@@ -693,11 +693,17 @@ body {
         height: 100vh;
         max-height: 100vh;
         border-radius: 0;
+        display: flex;
+        flex-direction: column;
     }
     
     .note-modal-container {
         grid-template-columns: 1fr;
         position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
     
     /* Drawer style for Edit History on mobile */
@@ -770,15 +776,35 @@ body {
     .note-main {
         padding: var(--spacing-md);
         padding-top: 50px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
     
     .note-main h2 {
         font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+    
+    #editNoteName {
+        flex-shrink: 0;
+    }
+    
+    #editNoteTextarea {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+    
+    .note-info {
+        flex-shrink: 0;
     }
     
     .modal-buttons {
         flex-direction: row;
         gap: var(--spacing-sm);
+        flex-shrink: 0;
     }
     
     .modal-buttons button {
